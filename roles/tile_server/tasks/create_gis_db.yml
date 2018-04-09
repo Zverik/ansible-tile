@@ -1,0 +1,32 @@
+---
+- name: Create {{ gisdb }} database
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: "{{ gisdb }}"
+    encoding: UTF-8
+    owner: "{{ render_user }}"
+
+- name: Add extensions to the new database {{ gisdb }}
+  become: yes
+  become_user: postgres
+  postgresql_ext: db={{ gisdb }} name={{ item }}
+  with_items:
+    - postgis
+    - hstore
+
+- name: Check owner of the {{ gisdb }} spatial tables
+  become: yes
+  become_user: postgres
+  command: psql -A -t -d {{ gisdb }} -c "SELECT tableowner FROM pg_tables WHERE schemaname = 'public' AND tablename = 'spatial_ref_sys'"
+  register: dbowner
+  changed_when: False
+
+- name: Grant permissions on postgis tables to render_user
+  become: yes
+  become_user: postgres
+  when: dbowner.stdout.strip() != render_user
+  command: psql -d {{ gisdb }} -c "ALTER TABLE {{ item }} OWNER TO {{ render_user }}"
+  with_items:
+    - geometry_columns
+    - spatial_ref_sys

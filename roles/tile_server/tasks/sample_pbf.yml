@@ -1,0 +1,26 @@
+---
+- name: Ensure the database is empty
+  become: yes
+  become_user: postgres
+  command: psql -A -t -d {{ gisdb }} -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'planet_osm_point'"
+  register: table
+  changed_when: False
+
+- name: Upload sample pbf file
+  when: not table.stdout
+  copy:
+    src: novorzhev.osm.pbf
+    dest: /var/tmp/novorzhev.osm.pbf
+    force: no
+
+- name: Load sample pbf file
+  when: not table.stdout
+  become_user: "{{ render_user }}"
+  become: yes
+  command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim -S /opt/styles/veloroad/veloroad.style -d {{ gisdb }} --number-processes {{ ansible_processor_cores}} /var/tmp/novorzhev.osm.pbf
+
+- name: Remove sample pbf
+  when: not table.stdout
+  file:
+    path: /var/tmp/novorzhev.osm.pbf
+    state: absent

@@ -1,0 +1,50 @@
+---
+- name: Download veloroad style
+  become_user: "{{ render_user }}"
+  become: yes
+  git:
+    repo: https://github.com/Zverik/veloroad.git
+    dest: /opt/styles/veloroad
+    update: no
+
+- name: Download shapefiles
+  become_user: "{{ render_user }}"
+  become: yes
+  command: ./get-shapefiles.sh
+  args:
+    chdir: /opt/styles/veloroad
+    creates: /opt/styles/veloroad/data/ptsans/DroidSansFallback.ttf
+
+- name: Create xml for veloroad
+  become_user: "{{ render_user }}"
+  become: yes
+  command: carto -a 3.0.9 -q project.mml -f veloroad.xml
+  args:
+    chdir: /opt/styles/veloroad
+    creates: /opt/styles/veloroad/veloroad.xml
+
+- name: Add renderd section for veloroad
+  become: yes
+  blockinfile:
+    path: /usr/local/etc/renderd.conf
+    insertafter: EOF
+    marker: '# {mark} veloroad'
+    block: |
+      [veloroad]
+      URI=/veloroad/
+      TILEDIR=/var/lib/mod_tile
+      XML=/opt/styles/veloroad/veloroad.xml
+      HOST={{ render_host }}
+      TILESIZE=256
+      MINZOOM=6
+      MAXZOOM=15
+
+      [veloroadhr]
+      URI=/veloroadhr/
+      TILEDIR=/var/lib/mod_tile
+      XML=/opt/styles/veloroad/veloroad.xml
+      HOST={{ render_host }}
+      TILESIZE=512
+      SCALE=2
+      MINZOOM=6
+      MAXZOOM=15

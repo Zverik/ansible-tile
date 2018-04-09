@@ -1,0 +1,116 @@
+---
+- name: Install Apache
+  become: yes
+  apt: pkg=apache2
+
+- name: Install packages for mod_tile
+  become: yes
+  apt: pkg={{ item }}
+  with_items:
+    - apache2-dev
+    - git
+    - autoconf
+    - automake
+    - m4
+    - libtool
+    - libmapnik-dev
+
+- name: Download mod_tile
+  git:
+    repo: https://github.com/SomeoneElseOSM/mod_tile.git
+    version: switch2osm
+    dest: /opt/src/mod_tile
+    update: no
+
+- name: Compile mod_tile
+  command: "{{ item }}"
+  args:
+    chdir: /opt/src/mod_tile
+    creates: /opt/src/mod_tile/.libs/renderd
+  with_items:
+    - ./autogen.sh
+    - ./configure
+    - make
+
+- name: Install mod_tile
+  become: yes
+  command: "{{ item }}"
+  args:
+    chdir: /opt/src/mod_tile
+    creates: /usr/lib/apache2/modules/mod_tile.so
+  with_items:
+    - make install
+    - make install-mod_tile
+    - ldconfig
+
+- name: Create mod_tile dirs
+  become: yes
+  file:
+    path: "{{ item }}"
+    owner: "{{ render_user }}"
+    state: directory
+  with_items:
+    - /var/lib/mod_tile
+    - /var/run/renderd
+
+- name: Copy empty renderd.conf
+  become: yes
+  copy:
+    src: renderd.conf
+    dest: /usr/local/etc/renderd.conf
+    force: no
+
+- name: Copy apache module config
+  become: yes
+  copy:
+    src: mod_tile.conf
+    dest: /etc/apache2/conf-available/mod_tile.conf
+
+- name: Enable mod_tile apache module
+  become: yes
+  command: a2enconf mod_tile
+  register: output
+  changed_when: "'Enabling conf mod_tile' in output.stdout"
+  notify: restart apache
+
+- name: Add renderd section to apache
+  become: yes
+  blockinfile:
+    path: /etc/apache2/sites-available/000-default.conf
+    insertbefore: '^\s*DocumentRoot'
+    block: |
+      LoadTileConfigFile /usr/local/etc/renderd.conf
+      ModTileRenderdSocketName /var/run/renderd/renderd.sock
+      # Timeout before giving up for a tile to be rendered
+      ModTileRequestTimeout 0
+      # Timeout before giving up for a tile to be rendered that is otherwise missing
+      ModTileMissingRequestTimeout 30
+  notify: restart apache
+
+- name: Copy renderd.init to init.d
+  become: yes
+  copy:
+    src: /opt/src/mod_tile/debian/renderd.init
+    dest: /etc/init.d/renderd
+    mode: 0755
+    remote_src: yes
+    force: no
+
+- name: Edit renderd.init to replace the user account
+  become: yes
+  lineinfile:
+    path: /etc/init.d/renderd
+    regexp: '^RUNASUSER='
+    line: RUNASUSER={{ render_user }}
+
+- name: Copy renderd systemd module
+  become: yes
+  copy:
+    src: /opt/src/mod_tile/debian/renderd.service
+    dest: /lib/systemd/system/renderd.service
+    remote_src: yes
+    force: no
+
+- name: Enable renderd systemd module
+  become: yes
+  systemd: name=renderd enabled=yes state=stopped

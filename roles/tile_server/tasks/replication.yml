@@ -1,0 +1,42 @@
+---
+- name: Get trim_osc
+  git:
+    repo: https://github.com/Zverik/regional.git
+    dest: /opt/src/regional
+
+- name: Upload update script
+  copy:
+    src: openstreetmap-tiles-update-expire
+    dest: /opt/src/openstreetmap-tiles-update-expire
+    mode: 0755
+
+- name: Create tiles log dir
+  become: yes
+  file:
+    path: /var/log/tiles
+    state: directory
+    owner: "{{ render_user }}"
+
+- name: Initialize osmosis state
+  become: yes
+  become_user: "{{ render_user }}"
+  command: /opt/src/openstreetmap-tiles-update-expire 2018-04-01
+  args:
+    chdir: /opt/src
+    creates: /var/lib/mod_tile/.osmosis/state.txt
+
+- name: Replace replication configuration
+  become: yes
+  become_user: "{{ render_user }}"
+  copy:
+    src: configuration.txt
+    dest: /var/lib/mod_tile/.osmosis/configuration.txt
+    force: no
+
+- name: Add replication to crontab
+  become: yes
+  become_user: "{{ render_user }}"
+  cron:
+    name: replication
+    job: /opt/src/openstreetmap-tiles-update-expire
+    minute: '*/5'

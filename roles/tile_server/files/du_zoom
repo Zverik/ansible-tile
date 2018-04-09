@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# Plugin to monitor the rendering throughput of Renderd
+#
+# Parameters: 
+#
+# 	config   (required)
+# 	autoconf (optional - used by munin-config)
+#
+
+if [ "$1" = "config" ]; then
+
+	echo 'graph_title Tile disk usage by zoom'
+	echo 'graph_args --base 1024 -l 0'
+	echo 'graph_vlabel Tile disk usage'
+	echo 'graph_category renderd'
+	echo 'z1.label zoom 6-8'
+	echo 'z1.draw AREASTACK'
+	echo 'z1.info Disk usage for z6-z8'
+	echo 'z2.label zoom 9'
+	echo 'z2.draw AREASTACK'
+	echo 'z2.info Disk usage for z9'
+	echo 'z3.label zoom 10'
+	echo 'z3.draw AREASTACK'
+	echo 'z3.info Disk usage for z10'
+	echo 'z4.label zoom 11'
+	echo 'z4.draw AREASTACK'
+	echo 'z4.info Disk usage for z11'
+	echo 'z5.label zoom 12'
+	echo 'z5.draw AREASTACK'
+	echo 'z5.info Disk usage for z12'
+	echo 'z6.label zoom 13-15'
+	echo 'z6.draw AREASTACK'
+	echo 'z6.info Disk usage for z13-15'
+
+	exit 0
+fi
+
+du --max-depth 1 /var/lib/mod_tile/veloroad > /tmp/du-veloroad.txt
+zoom6=`(grep \/6 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom7=`(grep \/7 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom8=`(grep \/8 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom9=`(grep \/9 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom10=`(grep \/10 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom11=`(grep \/11 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom12=`(grep \/12 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom13=`(grep \/13 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom14=`(grep \/14 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+zoom15=`(grep \/15 /tmp/du-veloroad.txt || echo 0) | cut -f1`
+rm /tmp/du-veloroad.txt
+
+echo "z1.value" `expr $zoom6 + $zoom7 + $zoom8`
+echo "z2.value $zoom9"
+echo "z3.value $zoom10"
+echo "z4.value $zoom11"
+echo "z5.value $zoom12"
+echo "z6.value" `expr $zoom13 + $zoom14 + $zoom15`

@@ -1,0 +1,50 @@
+---
+- hosts: all
+  remote_user: zverik
+  vars:
+    style: "{{ style | default('/opt/styles/veloroad/veloroad.style') }}"
+    database: "{{ database | default('gis') }}"
+    planet: /var/tmp/planet.osm.pbf
+    render_user: osm
+  tasks:
+    - name: Upload pbf
+      copy:
+        src: "{{ pbf_file }}"
+        dest: "{{ planet }}"
+        force: yes
+
+    - name: Stop db updates
+      cron:
+        name: replication
+        disabled: yes
+        user: "{{ render_user }}"
+
+    - name: Stop renderd
+      become: yes
+      systemd: name=renderd state=stopped
+
+    - name: Import pbf
+      become_user: "{{ render_user }}"
+      become: yes
+      command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim -S "{{ style }}" -d {{ database }} --number-processes 2 "{{ planet }}"
+
+    - name: Remove pbf
+      file:
+        name: "{{ planet }}"
+        state: absent
+
+    - name: Update replication state
+      lineinfile:
+        name: /var/lib/mod_tile/.osmosis/state.txt
+        regexp: '^sequenceNumber'
+        line: "sequenceNumber={{ pbf_state }}"
+
+    - name: Start db updates
+      cron:
+        name: replication
+        disabled: no
+        user: "{{ render_user }}"
+
+    - name: Start renderd
+      become: yes
+      systemd: name=renderd state=started

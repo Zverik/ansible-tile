@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Plugin to monitor the rendering throughput of Renderd
+#
+# Parameters: 
+#
+# 	config   (required)
+# 	autoconf (optional - used by munin-config)
+#
+
+if [ "$1" = "config" ]; then
+
+	echo 'graph_title Tile disk usage by layer'
+	echo 'graph_args --base 1024'
+	echo 'graph_vlabel Tile layer disk usage'
+	echo 'graph_category renderd'
+	echo 'v.label veloroad'
+	echo 'v.info Veloroad'
+	echo 'r.label veloroad hr'
+	echo 'r.info Veloroad HiDPI'
+
+	exit 0
+fi
+
+du --max-depth 1 /var/lib/mod_tile > /tmp/du-layers.txt
+veloroad=`grep \/veloroad /tmp/du-layers.txt | cut -f1`
+veloroadhr=`grep \/veloroadhr /tmp/du-layers.txt | cut -f1`
+rm /tmp/du-layers.txt
+
+echo "v.value $veloroad"
+echo "r.value $veloroadhr"

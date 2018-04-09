@@ -1,0 +1,18 @@
+---
+- hosts: all
+  gather_facts: no
+  become: yes
+  roles:
+    - common
+    - role: tersmitten.swapfile
+      swapfile_size: 200M
+
+- hosts: all
+  remote_user: zverik
+  vars:
+    render_host: tile.osmz.ru
+    render_user: osm
+    ansible_ssh_private_key_file: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
+  roles:
+    - tile_server
+    - get_veloroad

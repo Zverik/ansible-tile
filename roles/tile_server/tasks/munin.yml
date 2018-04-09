@@ -1,0 +1,60 @@
+---
+- name: Install munin packages
+  become: yes
+  apt: pkg={{ item }}
+  with_items:
+    - munin
+    - munin-node
+    - munin-plugins-extra
+    - libdbd-pg-perl
+
+- name: Allow outside access to munin
+  become: yes
+  replace:
+    path: /etc/munin/apache24.conf
+    regexp: '^(\s*)Require local.*$'
+    replace: '\1Require all granted'
+
+- name: Find mod_tile plugins
+  find:
+    path: /opt/src/mod_tile/munin
+  register: mt_munin
+
+- name: Add mod_tile plugins to munin
+  become: yes
+  file:
+    path: /etc/munin/plugins/{{ item.path | basename }}
+    src: "{{ item.path }}"
+    state: link
+  with_items:
+    - "{{ mt_munin.files }}"
+
+- name: Upload our munin plugins
+  copy:
+    src: "{{ item }}"
+    dest: /opt/src/
+    mode: 0755
+  with_items:
+    - du_layer
+    - du_zoom
+
+- name: Add our own munin plugins
+  become: yes
+  file:
+    path: /etc/munin/plugins/{{ item }}
+    src: /opt/src/{{ item }}
+    state: link
+  with_items:
+    - du_layer
+    - du_zoom
+
+- name: Reload munin plugins
+  become: yes
+  # TODO: get rid of shell
+  shell: munin-node-configure --sh | sh
+
+- name: Restart munin
+  become: yes
+  systemd: name=munin-node state=restarted
+
+# Apache will be restarted later

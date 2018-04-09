@@ -1,0 +1,52 @@
+---
+- name: Install PostGIS database
+  import_tasks: postgis.yml
+
+- name: Create gis database
+  import_tasks: create_gis_db.yml
+
+- name: Install tile packages
+  become: yes
+  apt: pkg={{ item }}
+  with_items:
+    - osm2pgsql
+    - osmosis
+    - libmapnik3.0
+
+- name: Install Apache with mod_tile
+  import_tasks: mod_tile.yml
+
+- name: Install osm-carto v3 style
+  include_tasks: osm_carto.yml
+  vars:
+    branch: v3.x
+    dir: osm-carto
+
+#- name: Install osm-carto v4 style
+#  include_tasks: osm_carto.yml
+#  vars:
+#    branch: master
+#    dir: osm-carto-4
+
+- name: Install veloroad style
+  import_tasks: veloroad.yml
+
+- name: Prepare html dir and install make_stat
+  import_tasks: make_stat.yml
+
+- name: Install sample pbf file
+  import_tasks: sample_pbf.yml
+
+- name: Set up replication
+  import_tasks: replication.yml
+
+- name: Install munin
+  import_tasks: munin.yml
+
+- name: Start renderd
+  become: yes
+  systemd: name=renderd state=started
+
+- name: Restart apache
+  become: yes
+  systemd: name=apache2 state=restarted

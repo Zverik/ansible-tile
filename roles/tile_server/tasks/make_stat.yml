@@ -1,0 +1,18 @@
+---
+- name: Chown /var/www/html to zverik
+  become: yes
+  file:
+    path: /var/www/html
+    owner: zverik
+    group: zverik
+
+- name: Upload make_stat
+  copy:
+    src: make_stat.sh
+    dest: /opt/src/make_stat.sh
+    mode: 0755
+
+- name: Add a line to crontab
+  cron:
+    name: make_stat
+    job: /opt/src/make_stat.sh > /var/www/html/stat.txt
