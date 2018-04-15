@@ -1,3 +1,4 @@
+PYTHON = 'python3.5'
 NIK4 = '/opt/src/Nik4/nik4.py'
 STYLES = {
     'veloroad': '/opt/styles/veloroad/veloroad-r.xml',

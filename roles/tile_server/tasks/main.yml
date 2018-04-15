@@ -17,16 +17,10 @@
   import_tasks: mod_tile.yml
 
 - name: Install osm-carto v3 style
-  include_tasks: osm_carto.yml
+  import_tasks: osm_carto.yml
   vars:
     branch: v3.x
     dir: osm-carto
-
-#- name: Install osm-carto v4 style
-#  include_tasks: osm_carto.yml
-#  vars:
-#    branch: master
-#    dir: osm-carto-4
 
 - name: Install veloroad style
   import_tasks: veloroad.yml
@@ -46,7 +40,3 @@
 - name: Start renderd
   become: yes
   systemd: name=renderd state=started
-
-- name: Restart apache
-  become: yes
-  systemd: name=apache2 state=restarted

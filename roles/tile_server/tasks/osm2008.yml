@@ -1,0 +1,32 @@
+---
+- name: Install osm-carto v4 style
+  import_tasks: osm_carto.yml
+  vars:
+    branch: master
+    dir: osm-carto-4
+
+- name: Check that the old table exists
+  become: yes
+  become_user: {{ render_user }}
+  command: psql -A -t -d {{ gisdb }} -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'old_polygon'"
+  register: has_2008
+  changed_when: False
+
+- name: Download old data
+  when: not has_2008.stdout
+  get_url:
+    url: http://zverik.openstreetmap.ru/planet-080220.osm.pbf
+    dest: /var/tmp/planet-2008.osm.pbf
+    checksum: md5:d7cc5da0fa3c7894b3a891e1ab97d2e9
+
+- name: Run osm2pgsql on old data
+  when: not has_2008.stdout
+  become_user: "{{ render_user }}"
+  become: yes
+  command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim --drop --hstore -G --prefix old -S /opt/styles/osm-carto-4/openstreetmap-carto.style --tag-transform-script /opt/styles/osm-carto-4/openstreetmap-carto.lua -d {{ gisdb }} --number-processes {{ ansible_processor_cores}} /var/tmp/planet-2008.osm.pbf
+
+- name: Remove old osm pbf
+  when: not has_2008.stdout
+  file:
+    path: /var/tmp/planet-2008.osm.pbf
+    state: absent

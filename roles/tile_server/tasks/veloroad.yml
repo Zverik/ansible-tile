@@ -15,6 +15,21 @@
     chdir: /opt/styles/veloroad
     creates: /opt/styles/veloroad/data/ptsans/DroidSansFallback.ttf
 
+- name: Find temporary archives
+  find:
+    path: /opt/styles/veloroad/data
+    patterns: '*.zip,*.xz'
+  register: zips
+
+- name: Delete temporary archives
+  become_user: "{{ render_user }}"
+  become: yes
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - "{{ zips.files }}"
+
 - name: Create xml for veloroad
   become_user: "{{ render_user }}"
   become: yes

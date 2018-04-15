@@ -1,60 +1,18 @@
 ---
+- name: Ensure py2 wsgi is not installed
+  become: yes
+  apt: pkg=libapache2-mod-wsgi state=absent
+
 - name: Install packages
   become: yes
   apt: pkg={{ item }}
   with_items:
-    - libapache2-mod-wsgi
-
-- name: Enable cgi for apache
-  become: yes
-  command: a2enmod cgid
-  register: output
-  changed_when: "'Enabling conf cgid' in output.stdout"
-  notify: restart apache
-
-- name: Checkout apps
-  git:
-    repo: https://github.com/Zverik/{{ item }}.git
-    dest: /opt/src/{{ item }}
-  with_items:
-    - a5a4
-    - nik4cgi
-    - Nik4
-
-- name: Copy bundled scripts
-  copy:
-    src: "{{ item }}"
-    dest: /opt/src/{{ item }}
-    mode: 0755
-  with_items:
-    - expandjson.py
-    - findbuildings.py
-
-- name: Allow symlinks for cgi scripts
-  become: yes
-  lineinfile:
-    path: /etc/apache2/conf-available/serve-cgi-bin.conf
-    regexp: '^\s*Options.*\+ExecCGI'
-    line: 'Options +ExecCGI -MultiViews'
-
-- name: Link to cgi scripts
-  become: yes
-  file:
-    path: /usr/lib/cgi-bin/{{ item.dest }}.py
-    src: /opt/src/{{ item.src }}.py
-    state: link
-  with_items:
-    - { dest: expandjson, src: expandjson }
-    - { dest: findbuildings, src: findbuildings }
-    - { dest: nik4cgi, src: nik4cgi/cgi-bin/nik4cgi }
-    - { dest: pdfjamcgi, src: a5a4/cgi/pdfjamcgi }
-
-- name: Symlink get-veloroad html
-  become: yes
-  file:
-    path: /var/www/html/get
-    src: /opt/src/nik4cgi/www
-    state: link
+    - python3
+    - python3-pip
+    - python3-venv
+    - python3-mapnik
+    - python3-psycopg2
+    - libapache2-mod-wsgi-py3
 
 - name: Grant www-data user access to postgresql/osm
   become: yes
@@ -65,4 +23,14 @@
     line: local gis osm trust
   notify: restart postgresql
 
-# TODO: create veloroad-r.xml, veloroad-en.xml and osm-r.xml
+- name: Install CGI scripts
+  import_tasks: cgi.yml
+
+- name: Install get_veloroad
+  import_tasks: nik4.yml
+
+- name: Install queryat
+  import_tasks: queryat.yml
+
+- name: Install a5a4
+  import_tasks: a5a4.yml

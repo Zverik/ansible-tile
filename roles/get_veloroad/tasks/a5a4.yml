@@ -1,0 +1,42 @@
+---
+- name: Install pdftk and pdfjam
+  apt: pkg={{ item }}
+  with_items:
+    - imagemagick
+    - pdftk
+    - texlive-extra-utils
+
+- name: Checkout a5a4
+  git:
+    repo: https://github.com/Zverik/a5a4.git
+    dest: /opt/src/a5a4
+
+- name: Upload a5a4 config
+  template:
+    src: a5a4_config.j2
+    dest: /opt/src/a5a4/config_local.py
+
+- name: Create virtualenv for a5a4
+  pip:
+    requirements: /opt/src/a5a4/requirements.txt
+    virtualenv: /opt/src/a5a4/venv
+    virtualenv_python: python3.5
+
+- name: Create /var/lib/a5a4
+  become: yes
+  file:
+    path: /var/lib/a5a4
+    state: directory
+    owner: www-data
+
+- name: Set up mod_wsgi for a5a4
+  become: yes
+  blockinfile:
+    path: /etc/apache2/sites-available/get_veloroad.conf
+    marker: '# {mark} a5a4'
+    block: |
+      WSGIScriptAlias /get /opt/src/a5a4/a5a4.wsgi
+      <Directory /opt/src/a5a4>
+          Require all granted
+      </Directory>
+  notify: restart apache

@@ -1,0 +1,64 @@
+---
+- name: Checkout queryat
+  git:
+    repo: https://github.com/Zverik/queryat.git
+    dest: /opt/src/queryat
+
+- name: Upload queryat config
+  copy:
+    src: queryat_config.py
+    dest: /opt/src/queryat/config_local.py
+
+- name: Create virtualenv for queryat
+  pip:
+    requirements: /opt/src/queryat/requirements.txt
+    virtualenv: /opt/src/queryat/venv
+    virtualenv_python: python3.5
+
+- name: Set up mod_wsgi for queryat
+  become: yes
+  blockinfile:
+    path: /etc/apache2/sites-available/get_veloroad.conf
+    marker: '# {mark} queryat'
+    block: |
+      WSGIScriptAlias /get /opt/src/queryat/queryat.wsgi
+      <Directory /opt/src/queryat>
+          Require all granted
+      </Directory>
+  notify: restart apache
+
+- name: Check that the at_polygon table exists
+  become: yes
+  become_user: {{ render_user }}
+  command: psql -A -t -d {{ gisdb }} -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'at_polygon'"
+  register: has_polygon
+  changed_when: False
+
+- name: Download administrative borders
+  when: not has_polygon.stdout
+  get_url:
+    url: http://zverik.openstreetmap.ru/at-180326.osm.pbf
+    dest: /var/tmp/at.osm.pbf
+    checksum: md5:TODO
+
+- name: Run osm2pgsql on borders
+  when: not has_polygon.stdout
+  become_user: "{{ render_user }}"
+  become: yes
+  command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim --drop --prefix at --latlong -S /opt/src/queryat/at.style -d {{ gisdb }} --number-processes {{ ansible_processor_cores}} /var/tmp/at.osm.pbf
+
+- name: Remove admin borders pbf
+  when: not has_polygon.stdout
+  file:
+    path: /var/tmp/at.osm.pbf
+    state: absent
+
+- name: Delete extra tables
+  when: not has_polygon.stdout
+  become: yes
+  become_user: {{ render_user }}
+  command: psql -A -t -d {{ gisdb }} -c "DROP TABLE {{ item }}"
+  with_items:
+    - at_point
+    - at_line
+    - at_roads

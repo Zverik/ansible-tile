@@ -45,6 +45,21 @@
     creates: /opt/styles/{{ dir }}/data/antarctica-icesheet-polygons-3857/icesheet_polygons.index
   when: branch != 'master'
 
+- name: Find temporary archives
+  find:
+    path: /opt/styles/{{ dir }}/data
+    patterns: '*.zip,*.tgz'
+  register: zips
+
+- name: Delete temporary archives
+  become_user: "{{ render_user }}"
+  become: yes
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - "{{ zips.files }}"
+
 - name: Symlink shapefile directory to ../osm-carto
   become_user: "{{ render_user }}"
   become: yes

@@ -1,0 +1,33 @@
+---
+- name: Enable cgi for apache
+  become: yes
+  command: a2enmod cgid
+  register: output
+  changed_when: "'Enabling conf cgid' in output.stdout"
+  notify: restart apache
+
+- name: Copy bundled scripts
+  copy:
+    src: "{{ item }}"
+    dest: /opt/src/{{ item }}
+    mode: 0755
+  with_items:
+    - expandjson.py
+    - findbuildings.py
+
+- name: Allow symlinks for cgi scripts
+  become: yes
+  lineinfile:
+    path: /etc/apache2/conf-available/serve-cgi-bin.conf
+    regexp: '^\s*Options.*\+ExecCGI'
+    line: 'Options +ExecCGI -MultiViews'
+
+- name: Link to cgi scripts
+  become: yes
+  file:
+    path: /usr/lib/cgi-bin/{{ item.dest }}.py
+    src: /opt/src/{{ item.src }}.py
+    state: link
+  with_items:
+    - { dest: expandjson, src: expandjson }
+    - { dest: findbuildings, src: findbuildings }

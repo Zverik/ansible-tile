@@ -1,0 +1,56 @@
+---
+- name: Checkout nik4 apps
+  git:
+    repo: https://github.com/Zverik/{{ item }}.git
+    dest: /opt/src/{{ item }}
+  with_items:
+    - nik4wsgi
+    - Nik4
+
+- name: Upload nik4wsgi config
+  copy:
+    src: nik4wsgi_config.py
+    dest: /opt/src/nik4wsgi/config_local.py
+
+- name: Create virtualenv for nik4wsgi
+  pip:
+    requirements: /opt/src/nik4wsgi/requirements.txt
+    virtualenv: /opt/src/nik4wsgi/venv
+    virtualenv_python: python3.5
+
+- name: Set up mod_wsgi for nik4wsgi
+  become: yes
+  blockinfile:
+    path: /etc/apache2/sites-available/get_veloroad.conf
+    create: yes
+    marker: '# {mark} nik4wsgi'
+    block: |
+      WSGIScriptAlias /get /opt/src/nik4wsgi/nik4.wsgi
+      <Directory /opt/src/nik4wsgi>
+          Require all granted
+      </Directory>
+  notify: restart apache
+
+- name: Enable get_veloroad config if not yet
+  become: yes
+  file:
+    src: /etc/apache2/sites-available/get_veloroad.conf
+    path: /etc/apache2/sites-enabled/get_veloroad.conf
+    state: link
+  notify: restart apache
+
+- name: Prepare veloroad style for get_veloroad
+  command: /opt/src/nik4wsgi/prepare_style/prepare_style.py /opt/styles/veloroad/veloroad.xml /opt/styles/veloroad/veloroad-r.xml
+  args:
+    creates: /opt/styles/veloroad/veloroad-r.xml
+
+- name: Make native language version of the veloroad style for get_veloroad
+  command: sed -e 's/"name:ru"/name/g' veloroad-r.xml veloroad-en.xml
+  args:
+    chdir: /opt/styles/veloroad
+    creates: /opt/styles/veloroad/veloroad-en.xml
+
+- name: Prepare osm-carto style for get_veloroad
+  command: /opt/src/nik4wsgi/prepare_style/prepare_style.py /opt/styles/osm-carto/osm.xml /opt/styles/osm-carto/osm-r.xml
+  args:
+    creates: /opt/styles/osm-carto/osm-r.xml
