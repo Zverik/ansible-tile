@@ -29,7 +29,7 @@
 
 - name: Check that the at_polygon table exists
   become: yes
-  become_user: {{ render_user }}
+  become_user: "{{ render_user }}"
   command: psql -A -t -d {{ gisdb }} -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'at_polygon'"
   register: has_polygon
   changed_when: False
@@ -56,7 +56,7 @@
 - name: Delete extra tables
   when: not has_polygon.stdout
   become: yes
-  become_user: {{ render_user }}
+  become_user: "{{ render_user }}"
   command: psql -A -t -d {{ gisdb }} -c "DROP TABLE {{ item }}"
   with_items:
     - at_point
