@@ -7,7 +7,7 @@
 
 - name: Check that the old table exists
   become: yes
-  become_user: {{ render_user }}
+  become_user: "{{ render_user }}"
   command: psql -A -t -d {{ gisdb }} -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'old_polygon'"
   register: has_2008
   changed_when: False

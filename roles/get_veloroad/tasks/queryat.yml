@@ -37,7 +37,7 @@
 - name: Download administrative borders
   when: not has_polygon.stdout
   get_url:
-    url: http://zverik.openstreetmap.ru/at-180326.osm.pbf
+    url: http://zverik.openstreetmap.ru/at-180416.osm.pbf
     dest: /var/tmp/at.osm.pbf
     checksum: md5:TODO
 

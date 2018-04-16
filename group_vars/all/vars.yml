@@ -1,0 +1,9 @@
+---
+icecast_location: Amsterdam
+icecast_admin_email: ilya@zverev.info
+icecast_admin_user: admin
+icecast_admin_password: hackme
+icecast_source_password: hackme
+icecast_hostname: tile.osmz.ru
+icecast_listen_sockets:
+  - port: 8000

@@ -16,3 +16,4 @@
   roles:
     - tile_server
     - get_veloroad
+    - billyrayvalentine.icecast

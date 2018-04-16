@@ -8,7 +8,6 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "ansible" do |ansible|
     ansible.force_remote_user = false
-    ansible.vault_password_file = ".vault_pass"
     ansible.verbose = "v"
     ansible.playbook = "playbook.yml"
   end
