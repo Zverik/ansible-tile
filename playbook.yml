@@ -2,10 +2,11 @@
 - hosts: all
   gather_facts: no
   become: yes
+  remote_user: root
   roles:
     - common
     - role: tersmitten.swapfile
-      swapfile_size: 200M
+      swapfile_size: 1000M
 
 - hosts: all
   remote_user: zverik

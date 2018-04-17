@@ -30,3 +30,12 @@
   with_items:
     - geometry_columns
     - spatial_ref_sys
+
+- name: Grant read permissions on {{ gisdb }} to zverik
+  become: yes
+  become_user: postgres
+  postgresql_privs:
+    database: "{{ gisdb }}"
+    role: zverik
+    type: database
+    privs: ALL

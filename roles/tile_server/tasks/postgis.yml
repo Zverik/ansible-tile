@@ -17,3 +17,8 @@
   become: yes
   become_user: postgres
   postgresql_user: name={{ render_user }}
+
+- name: Create zverik database role
+  become: yes
+  become_user: postgres
+  postgresql_user: name=zverik

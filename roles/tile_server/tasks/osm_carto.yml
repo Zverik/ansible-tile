@@ -4,7 +4,7 @@
   file:
     path: /opt/styles
     state: directory
-    owner: "{{ render_user }}"
+    owner: zverik
     mode: 0755
 
 - name: Install packages for osm-carto
@@ -28,8 +28,6 @@
     - millstone
 
 - name: Download osm-carto {{ branch }} style
-  become_user: "{{ render_user }}"
-  become: yes
   git:
     repo: https://github.com/gravitystorm/openstreetmap-carto.git
     version: "{{ branch }}"
@@ -37,8 +35,6 @@
     update: no
 
 - name: Download shapefiles
-  become_user: "{{ render_user }}"
-  become: yes
   command: scripts/get-shapefiles.py
   args:
     chdir: /opt/styles/{{ dir }}
@@ -52,8 +48,6 @@
   register: zips
 
 - name: Delete temporary archives
-  become_user: "{{ render_user }}"
-  become: yes
   file:
     path: "{{ item.path }}"
     state: absent
@@ -61,8 +55,6 @@
     - "{{ zips.files }}"
 
 - name: Symlink shapefile directory to ../osm-carto
-  become_user: "{{ render_user }}"
-  become: yes
   file:
     path: /opt/styles/{{ dir }}/data
     src: /opt/styles/osm-carto/data
@@ -70,8 +62,6 @@
   when: branch == 'master'
 
 - name: Create xml for osm-carto
-  become_user: "{{ render_user }}"
-  become: yes
   command: carto -a 3.0.9 -q project.mml -f osm.xml
   args:
     chdir: /opt/styles/{{ dir }}

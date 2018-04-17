@@ -39,7 +39,7 @@
   get_url:
     url: http://zverik.openstreetmap.ru/at-180416.osm.pbf
     dest: /var/tmp/at.osm.pbf
-    checksum: md5:TODO
+    checksum: md5:b57689bc8b561aab30cd75c0b9dfa96e
 
 - name: Run osm2pgsql on borders
   when: not has_polygon.stdout

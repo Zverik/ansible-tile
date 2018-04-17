@@ -45,9 +45,8 @@
     creates: /opt/styles/veloroad/veloroad-r.xml
 
 - name: Make native language version of the veloroad style for get_veloroad
-  command: sed -e 's/"name:ru"/name/g' veloroad-r.xml veloroad-en.xml
+  shell: sed -e 's/"name:ru"/name/g' /opt/styles/veloroad/veloroad-r.xml > /opt/styles/veloroad/veloroad-en.xml
   args:
-    chdir: /opt/styles/veloroad
     creates: /opt/styles/veloroad/veloroad-en.xml
 
 - name: Prepare osm-carto style for get_veloroad

@@ -1,15 +1,11 @@
 ---
 - name: Download veloroad style
-  become_user: "{{ render_user }}"
-  become: yes
   git:
     repo: https://github.com/Zverik/veloroad.git
     dest: /opt/styles/veloroad
     update: no
 
 - name: Download shapefiles
-  become_user: "{{ render_user }}"
-  become: yes
   command: ./get-shapefiles.sh
   args:
     chdir: /opt/styles/veloroad
@@ -22,8 +18,6 @@
   register: zips
 
 - name: Delete temporary archives
-  become_user: "{{ render_user }}"
-  become: yes
   file:
     path: "{{ item.path }}"
     state: absent
@@ -31,8 +25,6 @@
     - "{{ zips.files }}"
 
 - name: Create xml for veloroad
-  become_user: "{{ render_user }}"
-  become: yes
   command: carto -a 3.0.9 -q project.mml -f veloroad.xml
   args:
     chdir: /opt/styles/veloroad
