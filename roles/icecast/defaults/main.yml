@@ -1,0 +1,7 @@
+---
+icecast_location: Earth
+icecast_admin_email: icemaster@localhost
+icecast_source_password: hackme
+icecast_relay_password: hackme
+icecast_admin_password: hackme
+icecast_hostname: example.com

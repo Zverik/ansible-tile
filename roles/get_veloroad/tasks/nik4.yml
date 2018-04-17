@@ -11,6 +11,7 @@
   copy:
     src: nik4wsgi_config.py
     dest: /opt/src/nik4wsgi/config_local.py
+  notify: restart apache
 
 - name: Create virtualenv for nik4wsgi
   pip:

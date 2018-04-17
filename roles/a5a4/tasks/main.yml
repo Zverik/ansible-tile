@@ -11,6 +11,7 @@
   git:
     repo: https://github.com/Zverik/a5a4.git
     dest: /opt/src/a5a4
+  notify: restart apache
 
 - name: Upload a5a4 config
   template:

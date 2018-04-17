@@ -1,0 +1,19 @@
+---
+- name: Install icecast
+  become: yes
+  apt: pkg=icecast2
+
+- name: Upload configuration file
+  become: yes
+  template: 
+    src: icecast.xml.j2 
+    dest: /etc/icecast2/icecast.xml
+    owner: icecast2
+    group: icecast
+    mode: 0640
+  notify: 
+    - reload icecast
+
+- name: Enable Icecast service
+  become: yes
+  systemd: name=icecast2 enabled=yes

@@ -3,6 +3,7 @@
   git:
     repo: https://github.com/Zverik/queryat.git
     dest: /opt/src/queryat
+  notify: restart apache
 
 - name: Upload queryat config
   copy:
