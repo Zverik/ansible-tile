@@ -1,0 +1,95 @@
+---
+- name: Install packages for osm-carto
+  become: yes
+  apt: pkg={{ item }}
+  with_items:
+    - fonts-noto-cjk
+    - fonts-noto-hinted
+    - fonts-noto-unhinted
+    - ttf-unifont
+    - npm
+    - nodejs-legacy
+    - mapnik-utils
+    - curl
+
+- name: Install carto and millstone
+  become: yes
+  npm: name={{ item }} global=yes
+  with_items:
+    - carto
+    - millstone
+
+- name: Download osm-carto {{ branch }} style
+  git:
+    repo: https://github.com/gravitystorm/openstreetmap-carto.git
+    version: "{{ branch }}"
+    dest: /opt/styles/{{ dir }}
+    update: no
+
+- name: Download shapefiles
+  command: scripts/get-shapefiles.py
+  args:
+    chdir: /opt/styles/{{ dir }}
+    creates: /opt/styles/{{ dir }}/data/antarctica-icesheet-polygons-3857/icesheet_polygons.index
+  when: branch != 'master'
+
+- name: Find temporary archives
+  find:
+    path: /opt/styles/{{ dir }}/data
+    patterns: '*.zip,*.tgz'
+  register: zips
+
+- name: Delete temporary archives
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - "{{ zips.files }}"
+
+- name: Symlink shapefile directory to ../osm-carto
+  file:
+    path: /opt/styles/{{ dir }}/data
+    src: /opt/styles/osm-carto/data
+    state: link
+  when: branch == 'master'
+
+- name: Create xml for osm-carto
+  command: carto -a 3.0.9 -q project.mml -f osm.xml
+  args:
+    chdir: /opt/styles/{{ dir }}
+    creates: /opt/styles/{{ dir }}/osm.xml
+
+- name: Add renderd section for osm-carto
+  become: yes
+  blockinfile:
+    path: /usr/local/etc/renderd.conf
+    insertafter: EOF
+    marker: '# {mark} osm-carto'
+    block: |
+      [osm]
+      URI=/osm/
+      TILEDIR=/var/lib/mod_tile
+      XML=/opt/styles/{{ dir }}/osm.xml
+      HOST={{ render_host }}
+      TILESIZE=512
+      SCALE=2
+      MINZOOM=4
+      MAXZOOM=18
+  when: branch != 'master'
+
+- name: Add renderd section for osm-carto-4
+  become: yes
+  blockinfile:
+    path: /usr/local/etc/renderd.conf
+    insertafter: EOF
+    marker: '# {mark} osm-carto 4'
+    block: |
+      [old]
+      URI=/old/
+      TILEDIR=/var/lib/mod_tile
+      XML=/opt/styles/{{ dir }}/osm.xml
+      HOST={{ render_host }}
+      TILESIZE=256
+      MINZOOM=4
+      MAXZOOM=18
+  when: branch == 'master'

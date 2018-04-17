@@ -1,0 +1,4 @@
+---
+- name: restart munin
+  become: yes
+  systemd: name=munin-node state=restarted

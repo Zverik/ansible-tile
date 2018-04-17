@@ -21,7 +21,7 @@
     path: /etc/apache2/sites-available/get_veloroad.conf
     marker: '# {mark} queryat'
     block: |
-      WSGIScriptAlias /get /opt/src/queryat/queryat.wsgi
+      WSGIScriptAlias /queryat /opt/src/queryat/queryat.wsgi
       <Directory /opt/src/queryat>
           Require all granted
       </Directory>
@@ -46,6 +46,7 @@
   become_user: "{{ render_user }}"
   become: yes
   command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim --drop --prefix at --latlong -S /opt/src/queryat/at.style -d {{ gisdb }} --number-processes {{ ansible_processor_cores}} /var/tmp/at.osm.pbf
+  async: 1200
 
 - name: Remove admin borders pbf
   when: not has_polygon.stdout

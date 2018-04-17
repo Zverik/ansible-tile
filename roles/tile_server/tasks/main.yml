@@ -25,20 +25,11 @@
 - name: Install veloroad style
   import_tasks: veloroad.yml
 
-- name: Prepare html dir and install make_stat
-  import_tasks: make_stat.yml
-
 - name: Install sample pbf file
   import_tasks: sample_pbf.yml
 
 - name: Set up replication
   import_tasks: replication.yml
-
-- name: Install OSM 2008
-  import_tasks: osm2008.yml
-
-- name: Install munin
-  import_tasks: munin.yml
 
 - name: Start renderd
   become: yes

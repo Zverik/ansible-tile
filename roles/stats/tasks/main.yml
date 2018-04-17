@@ -1,0 +1,6 @@
+---
+- name: Prepare html dir and install make_stat
+  import_tasks: make_stat.yml
+
+- name: Install munin
+  import_tasks: munin.yml

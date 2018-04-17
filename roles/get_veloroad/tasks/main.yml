@@ -33,9 +33,3 @@
 
 - name: Install get_veloroad
   import_tasks: nik4.yml
-
-- name: Install queryat
-  import_tasks: queryat.yml
-
-- name: Install a5a4
-  import_tasks: a5a4.yml

@@ -24,6 +24,7 @@
   become_user: "{{ render_user }}"
   become: yes
   command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim --drop --hstore -G --prefix old -S /opt/styles/osm-carto-4/openstreetmap-carto.style --tag-transform-script /opt/styles/osm-carto-4/openstreetmap-carto.lua -d {{ gisdb }} --number-processes {{ ansible_processor_cores}} /var/tmp/planet-2008.osm.pbf
+  async: 1800
 
 - name: Remove old osm pbf
   when: not has_2008.stdout

@@ -1,4 +1,7 @@
 ---
+gisdb: gis
+render_user: osm
+
 icecast_location: Amsterdam
 icecast_admin_email: ilya@zverev.info
 icecast_admin_user: admin
