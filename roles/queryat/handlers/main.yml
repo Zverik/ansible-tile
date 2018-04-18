@@ -1,0 +1,9 @@
+---
+- name: reload apache
+  become: yes
+  systemd: name=apache2 state=reloaded
+
+- name: touch queryat
+  file:
+    path: /opt/src/queryat/queryat.wsgi
+    state: touch

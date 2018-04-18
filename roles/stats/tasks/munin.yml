@@ -54,4 +54,4 @@
   shell: munin-node-configure --sh | sh
   notify:
     - restart munin
-    - restart apache
+    - reload apache

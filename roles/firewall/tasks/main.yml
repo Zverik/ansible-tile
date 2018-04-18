@@ -1,0 +1,6 @@
+---
+- name: Set up firewall
+  import_tasks: firewall.yml
+
+- name: Set up fail2ban
+  import_tasks: fail2ban.yml

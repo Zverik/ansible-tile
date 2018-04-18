@@ -1,0 +1,9 @@
+---
+- name: reload apache
+  become: yes
+  systemd: name=apache2 state=reloaded
+
+- name: touch nik4
+  file:
+    path: /opt/src/nik4wsgi/nik4.wsgi
+    state: touch

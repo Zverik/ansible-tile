@@ -1,8 +1,4 @@
 ---
-- name: Install Apache
-  become: yes
-  apt: pkg=apache2
-
 - name: Install packages for mod_tile
   become: yes
   apt: pkg={{ item }}

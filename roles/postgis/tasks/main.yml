@@ -1,12 +1,10 @@
 ---
 - name: Create render user
-  become: yes
   user:
     name: "{{ render_user }}"
     createhome: no
 
 - name: Install PostgreSQL and PostGIS
-  become: yes
   apt: pkg={{ item }}
   with_items:
     - postgresql-9.5-postgis-2.2

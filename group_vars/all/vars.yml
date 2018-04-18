@@ -1,6 +1,9 @@
 ---
 gisdb: gis
 render_user: osm
+render_host: tile.osmz.ru
+ntp_timezone: Europe/Moscow
+admin_email: ilya@zverev.info
 
 icecast_location: Amsterdam
 icecast_admin_email: ilya@zverev.info

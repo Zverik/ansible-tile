@@ -1,0 +1,9 @@
+---
+- name: reload apache
+  become: yes
+  systemd: name=apache2 state=reloaded
+
+- name: touch a5a4
+  file:
+    path: /opt/src/a5a4/a5a4.wsgi
+    state: touch

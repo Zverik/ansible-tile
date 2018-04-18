@@ -39,3 +39,12 @@
     role: zverik
     type: database
     privs: ALL
+
+- name: Grant www-data user access to postgresql/osm
+  become: yes
+  lineinfile:
+    path: /etc/postgresql/9.5/main/pg_hba.conf
+    insertafter: '# TYPE\s*DATABASE'
+    regexp: '^local gis'
+    line: local {{ gisdb }} {{ render_user }} trust
+  notify: restart postgresql

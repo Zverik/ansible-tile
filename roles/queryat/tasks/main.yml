@@ -3,7 +3,7 @@
   git:
     repo: https://github.com/Zverik/queryat.git
     dest: /opt/src/queryat
-  notify: restart apache
+  notify: touch queryat
 
 - name: Upload queryat config
   copy:
@@ -26,7 +26,7 @@
       <Directory /opt/src/queryat>
           Require all granted
       </Directory>
-  notify: restart apache
+  notify: reload apache
 
 - name: Check that the at_polygon table exists
   become: yes

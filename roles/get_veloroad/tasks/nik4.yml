@@ -11,7 +11,7 @@
   copy:
     src: nik4wsgi_config.py
     dest: /opt/src/nik4wsgi/config_local.py
-  notify: restart apache
+  notify: touch nik4
 
 - name: Create virtualenv for nik4wsgi
   pip:
@@ -30,7 +30,7 @@
       <Directory /opt/src/nik4wsgi>
           Require all granted
       </Directory>
-  notify: restart apache
+  notify: reload apache
 
 - name: Enable get_veloroad config if not yet
   become: yes
@@ -38,7 +38,7 @@
     src: /etc/apache2/sites-available/get_veloroad.conf
     path: /etc/apache2/sites-enabled/get_veloroad.conf
     state: link
-  notify: restart apache
+  notify: reload apache
 
 - name: Prepare veloroad style for get_veloroad
   command: /opt/src/nik4wsgi/prepare_style/prepare_style.py /opt/styles/veloroad/veloroad.xml /opt/styles/veloroad/veloroad-r.xml

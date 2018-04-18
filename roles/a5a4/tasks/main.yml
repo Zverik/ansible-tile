@@ -11,7 +11,7 @@
   git:
     repo: https://github.com/Zverik/a5a4.git
     dest: /opt/src/a5a4
-  notify: restart apache
+  notify: touch a5a4
 
 - name: Upload a5a4 config
   template:
@@ -41,4 +41,4 @@
       <Directory /opt/src/a5a4>
           Require all granted
       </Directory>
-  notify: restart apache
+  notify: reload apache

@@ -1,7 +1,4 @@
 ---
-- name: Install PostGIS database
-  import_tasks: postgis.yml
-
 - name: Create gis database
   import_tasks: create_gis_db.yml
 
@@ -13,7 +10,7 @@
     - osmosis
     - libmapnik3.0
 
-- name: Install Apache with mod_tile
+- name: Install mod_tile
   import_tasks: mod_tile.yml
 
 - name: Install osm-carto v3 style

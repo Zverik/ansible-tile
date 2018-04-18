@@ -1,10 +1,8 @@
 ---
 - name: Install icecast
-  become: yes
   apt: pkg=icecast2
 
 - name: Upload configuration file
-  become: yes
   template: 
     src: icecast.xml.j2 
     dest: /etc/icecast2/icecast.xml
@@ -15,5 +13,10 @@
     - reload icecast
 
 - name: Enable Icecast service
-  become: yes
   systemd: name=icecast2 enabled=yes
+
+- name: Open port 8000
+  ufw:
+    rule: allow
+    port: 8000
+  notify: restart ufw

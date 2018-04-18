@@ -5,14 +5,23 @@
   remote_user: root
   roles:
     - common
+
+- hosts: all
+  become: yes
+  remote_user: root
+  roles:
     - role: tersmitten.swapfile
       swapfile_size: 1000M
+    - geerlingguy.ntp
+    - apache
+    - firewall
+    - postgis
+    - python3
+    - icecast
 
 - hosts: all
   remote_user: zverik
   vars:
-    render_host: tile.osmz.ru
-    render_user: osm
     ansible_ssh_private_key_file: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
   roles:
     - tile_server
@@ -20,5 +29,4 @@
     - get_veloroad
     - queryat
     - a5a4
-    - icecast
     - stats

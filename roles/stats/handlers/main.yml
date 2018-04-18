@@ -2,3 +2,7 @@
 - name: restart munin
   become: yes
   systemd: name=munin-node state=restarted
+
+- name: reload apache
+  become: yes
+  systemd: name=apache2 state=reloaded

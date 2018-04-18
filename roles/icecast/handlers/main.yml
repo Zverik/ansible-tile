@@ -1,4 +1,3 @@
 ---
 - name: reload icecast
-  become: yes
   systemd: name=icecast2 state=reloaded

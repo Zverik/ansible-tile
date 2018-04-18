@@ -1,0 +1,16 @@
+---
+- name: Install Apache
+  apt: pkg=apache2
+
+- name: Enable cgi for apache
+  command: a2enmod cgid
+  register: output
+  changed_when: "'Enabling conf cgid' in output.stdout"
+  notify: restart apache
+
+- name: Allow symlinks for cgi scripts
+  lineinfile:
+    path: /etc/apache2/conf-available/serve-cgi-bin.conf
+    regexp: '^\s*Options.*\+ExecCGI'
+    line: 'Options +ExecCGI -MultiViews'
+  notify: restart apache
