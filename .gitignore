@@ -1,1 +1,4 @@
 .vault_pass
+.vagrant
+playbook.retry
+roles.galaxy/

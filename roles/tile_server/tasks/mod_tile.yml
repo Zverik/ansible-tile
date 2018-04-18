@@ -109,4 +109,4 @@
 
 - name: Enable renderd systemd module
   become: yes
-  systemd: name=renderd enabled=yes state=stopped
+  systemd: name=renderd enabled=yes
