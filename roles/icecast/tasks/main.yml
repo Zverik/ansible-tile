@@ -12,6 +12,13 @@
   notify: 
     - reload icecast
 
+- name: Enable Icecast in the config
+  lineinfile:
+    path: /etc/default/icecast2
+    regexp: '^\s*ENABLE'
+    line: 'ENABLE=true'
+    state: present
+
 - name: Enable Icecast service
   systemd: name=icecast2 enabled=yes
 
