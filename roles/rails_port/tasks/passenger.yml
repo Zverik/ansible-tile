@@ -1,0 +1,33 @@
+---
+- name: Install mod_passenger
+  apt: pkg=libapache2-mod-passenger
+
+- name: Enable mod_env
+  apache2_module:
+    name: env
+    state: present
+  notify: restart apache
+
+- name: Enable passenger
+  apache2_module:
+    name: passenger
+    state: present
+  notify: restart apache
+
+- name: Upload apache config
+  template:
+    src: osm.conf.j2
+    dest: /etc/apache2/sites-available/osm.conf
+  notify: reload apache
+
+- name: Create apache log dir
+  file:
+    path: /var/log/apache2/osm
+    state: directory
+
+- name: Symlink apache config
+  file:
+    src: /etc/apache2/sites-available/osm.conf
+    dest: /etc/apache2/sites-enabled/osm.conf
+    state: link
+  notify: reload apache

@@ -18,7 +18,6 @@
     - postgis
     - python3
     - php
-    - ruby_passenger
     - icecast
 
 - hosts: all

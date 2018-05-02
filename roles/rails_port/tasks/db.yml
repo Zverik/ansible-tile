@@ -1,0 +1,34 @@
+---
+- name: Create rails user
+  postgresql_user: name=rails
+
+- name: Create rails database
+  postgresql_db:
+    name: "{{ item }}"
+    encoding: UTF-8
+    owner: rails
+  with_items:
+    - osm_test
+    - osm_dev
+    - openstreetmap
+
+- name: Allow logging in as rails by anybody
+  lineinfile:
+    path: /etc/postgresql/9.5/main/pg_hba.conf
+    insertafter: '# TYPE\s*DATABASE'
+    regexp: '^local openstreetmap'
+    line: local openstreetmap,osm_dev,osm_test rails trust
+  register: pgmod
+
+- name: Restart postgresql if needed
+  when: pgmod.changed
+  become: yes
+  become_user: root
+  systemd: name=postgresql state=restarted
+
+- name: Add btree extension to db
+  postgresql_ext: db={{ item }} name=btree_gist
+  with_items:
+    - osm_test
+    - osm_dev
+    - openstreetmap

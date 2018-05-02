@@ -1,2 +1,8 @@
 ---
-rails_port_user: osmweb
+rails_secret: a988ac601d9e3d288d501455bfc3bd5170e53d2ebeb0e7686a4244ea3fb2f2bb4e63904e37dd35eab793e93165e16a8c2fc2c8522b030179c8e2088834584b1d
+google_auth_id: ""
+google_auth_secret: ""
+facebook_auth_id: ""
+facebook_auth_secret: ""
+mapsme_auth_id: ""
+mapsme_auth_secret: ""

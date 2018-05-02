@@ -3,9 +3,9 @@
   apt: pkg=apache2
 
 - name: Enable cgi for apache
-  command: a2enmod cgid
-  register: output
-  changed_when: "'Enabling conf cgid' in output.stdout"
+  apache2_module:
+    name: cgid
+    state: present
   notify: restart apache
 
 - name: Allow symlinks for cgi scripts

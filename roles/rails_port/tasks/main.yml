@@ -6,37 +6,103 @@
     - ruby2.3
     - libruby2.3
     - ruby2.3-dev
+    - imagemagick
     - libmagickwand-dev
     - libxml2-dev
     - libxslt1-dev
-    - nodejs
-    - apache2-dev
-    - build-essential
-    - libpq-dev
-    - postgresql-server-dev-all
-    - libsasl2-dev
-    - imagemagick
-    - libffi-dev
+    - libapache2-mod-passenger
+
+#- name: Install bundler - does not work!
+#  become: yes
+#  gem:
+#    name: bundler
+#    state: present
+#    user_install: no
+
+- name: Check that bundler is not installed
+  command: which bundle
+  register: bundle
+  changed_when: False
 
 - name: Install bundler
+  when: bundle.failed
   become: yes
-  gem: name=bundler state=present
-
-# TODO: employ {{ rails_port_user }}
+  command: gem2.3 install bundler
 
 - name: Clone osm-website
   git:
     repo: https://github.com/zverik/openstreetmap-website.git
-    branch: mapsme
-    path: /opt/src/openstreetmap-website
+    version: mapsme
+    dest: /opt/src/openstreetmap-website
 
 - name: Install gems
   bundler:
     chdir: /opt/src/openstreetmap-website
     state: present
+    deployment_mode: yes
 
 - name: Copy application config
+  template:
+    src: application.yml.j2
+    dest: /opt/src/openstreetmap-website/config/application.yml
+
+- name: Copy database config
   copy:
-    remote_src: yes
-    src: /opt/src/openstreetmap-website/config/example.application.yml
-    file: /opt/src/openstreetmap-website/config/application.yml
+    src: database.yml
+    dest: /opt/src/openstreetmap-website/config/database.yml
+
+- name: Create db
+  become: yes
+  become_user: postgres
+  import_tasks: db.yml
+
+- name: Compile db function
+  command: make libpgosm.so
+  args:
+    chdir: /opt/src/openstreetmap-website/db/functions
+    creates: libpgosm.so
+
+- name: Check that db functions are not installed
+  command: psql -A -t -U rails -d openstreetmap -c "SELECT 'xid_to_int4'::regproc"
+  register: func
+  changed_when: False
+  failed_when: False
+
+- name: Install db functions
+  when: func.stderr
+  become: yes
+  become_user: postgres
+  command: psql -d openstreetmap -c "CREATE FUNCTION {{ item.name }}({{ item.args }}) RETURNS {{ item.ret }} AS '/opt/src/openstreetmap-website/db/functions/libpgosm', '{{ item.name }}' LANGUAGE C STRICT"
+  with_items:
+    - {name: maptile_for_point, args: 'int8, int8, int4', ret: int4}
+    - {name: tile_for_point, args: 'int4, int4', ret: in8}
+    - {name: xid_to_int4, args: 'xid', ret: int4}
+
+- name: Migrate db
+  command: bundle exec rake db:migrate
+  args:
+    chdir: /opt/src/openstreetmap-website
+
+- name: Check that structure.sql needs reverting
+  command: git status -s db/structure.sql
+  args:
+    chdir: /opt/src/openstreetmap-website
+  changed_when: False
+  register: structure
+
+- name: Revert db/structure.sql if needed
+  when: structure.stdout
+  command: git checkout -- db/structure.sql
+  args:
+    chdir: /opt/src/openstreetmap-website
+
+- name: Precompile assets
+  shell: RAILS_ENV=production bundle exec rake assets:precompile
+  args:
+    chdir: /opt/src/openstreetmap-website
+    creates: /opt/src/openstreetmap-website/public/assets/images
+  notify: restart apache
+
+- name: Publish website
+  become: yes
+  import_tasks: passenger.yml

@@ -1,0 +1,17 @@
+<VirtualHost *:80>
+  ServerName test.osmz.ru
+  ServerAlias test2.osmz.ru
+
+  ServerAdmin webmaster@localhost
+  DocumentRoot /opt/src/openstreetmap-website/public
+  PassengerRuby /usr/bin/ruby2.3
+  SetEnv SECRET_KEY_BASE {{ rails_secret }}
+
+  ErrorLog ${APACHE_LOG_DIR}/osm/error.log
+  CustomLog ${APACHE_LOG_DIR}/osm/access.log combined
+
+  <Directory /opt/src/openstreetmap-website/public>
+    Require all granted
+    Options -MultiViews
+  </Directory>
+</VirtualHost>

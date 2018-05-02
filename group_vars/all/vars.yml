@@ -11,3 +11,11 @@ icecast_hostname: tile.osmz.ru
 icecast_admin_password: "{{ v_icecast_admin_password }}"
 icecast_relay_password: "{{ v_icecast_source_password }}"
 icecast_source_password: "{{ v_icecast_source_password }}"
+
+rails_secret: "{{ v_rails_secret }}"
+google_auth_id: "{{ v_google_auth_id }}"
+google_auth_secret: "{{ v_google_auth_secret }}"
+facebook_auth_id: "{{ v_facebook_auth_id }}"
+facebook_auth_secret: "{{ v_facebook_auth_secret }}"
+mapsme_auth_id: "{{ v_mapsme_auth_id }}"
+mapsme_auth_secret: "{{ v_mapsme_auth_secret }}"
