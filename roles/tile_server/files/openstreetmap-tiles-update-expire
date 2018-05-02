@@ -11,7 +11,7 @@ OSM2PGSQL_OPTIONS="-S /opt/styles/veloroad/veloroad.style"
 
 REPLAG=/opt/src/mod_tile/osmosis-db_replag
 TRIM_OSC=/opt/src/regional/trim_osc.py
-BOUNDS_POLY=/opt/styles/bounds.poly
+BOUNDS_POLY=/opt/styles/bounds.json
 
 BASE_DIR=/var/lib/mod_tile
 LOG_DIR=/var/log/tiles

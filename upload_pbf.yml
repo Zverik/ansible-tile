@@ -1,15 +1,22 @@
 ---
+# Uploads a fresh osm.pbf to a tile server.
+#
+# Parameters:
+# - pbf: name of a pbf file to upload
+# - state: number of the last minutely diff applied to that pbf
+# - bounds: optional, geojson file with trim bounds
+#
 - hosts: all
   remote_user: zverik
   vars:
     style: "{{ style | default('/opt/styles/veloroad/veloroad.style') }}"
-    database: "{{ database | default('gis') }}"
+    database: "{{ gisdb }}"
     planet: /var/tmp/planet.osm.pbf
     render_user: osm
   tasks:
     - name: Upload pbf
       copy:
-        src: "{{ pbf_file }}"
+        src: "{{ pbf }}"
         dest: "{{ planet }}"
         force: yes
 
@@ -27,6 +34,7 @@
       become_user: "{{ render_user }}"
       become: yes
       command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim -S "{{ style }}" -d {{ database }} --number-processes 2 "{{ planet }}"
+      async: 3600
 
     - name: Remove pbf
       file:
@@ -37,8 +45,20 @@
       lineinfile:
         name: /var/lib/mod_tile/.osmosis/state.txt
         regexp: '^sequenceNumber'
-        line: "sequenceNumber={{ pbf_state }}"
+        line: "sequenceNumber={{ state }}"
 
+    - name: Update bounds for trim_osc
+      when: bounds
+      copy:
+        src: "{{ bounds }}"
+        dest: /opt/styles/bounds.json
+
+    - name: Update bounds for nik4wsgi
+      when: bounds
+      copy:
+        src: "{{ bounds }}"
+        dest: /opt/src/nik4wsgi/www/static/bounds.geojson
+    
     - name: Start db updates
       cron:
         name: replication
