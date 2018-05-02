@@ -8,7 +8,7 @@
     dest: /etc/icecast2/icecast.xml
     owner: icecast2
     group: icecast
-    mode: 0640
+    mode: 0644
   notify: 
     - reload icecast
 
@@ -20,7 +20,7 @@
     state: present
 
 - name: Enable Icecast service
-  systemd: name=icecast2 enabled=yes
+  systemd: name=icecast2 enabled=yes state=started
 
 - name: Open port 8000
   ufw:

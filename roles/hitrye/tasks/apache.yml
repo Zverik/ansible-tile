@@ -1,0 +1,18 @@
+---
+- name: Upload apache config
+  copy:
+    src: hitrye.conf
+    dest: /etc/apache2/sites-available
+  notify: reload apache
+
+- name: Create apache log dir
+  file:
+    path: /var/log/apache2/hitrye
+    state: directory
+
+- name: Symlink apache config
+  file:
+    src: /etc/apache2/sites-available/hitrye.conf
+    dest: /etc/apache2/sites-enabled/hitrye.conf
+    state: link
+  notify: reload apache

@@ -1,0 +1,22 @@
+---
+- name: Install phpBB {{ phpbb_version }}
+  import_tasks: phpbb.yml
+
+- name: Install Topic Descriptions extension
+  import_tasks: topicdesc.yml
+
+- name: Install Recent Topics extension
+  import_tasks: recent_topics.yml
+
+- name: Create database
+  become: yes
+  become_user: postgres
+  import_tasks: db.yml
+
+- name: Set up apache config
+  become: yes
+  import_tasks: apache.yml
+
+- name: Set up backups
+  become: yes
+  import_tasks: backup.yml

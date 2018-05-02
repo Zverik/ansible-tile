@@ -1,0 +1,32 @@
+---
+- name: Check that recent topics is installed
+  stat:
+    path: /var/www/hitrye/ext/paybas/recenttopics/ext.php
+  register: rt
+
+- name: Download Recent Topics extension
+  when: not rt.stat.exists
+  get_url:
+    url: https://www.phpbb.com/customise/db/download/154391
+    dest: /var/tmp/recent.zip
+    checksum: md5:f6033fc793bcbd0197d9597464e21cda
+
+- name: Unpack recent topics
+  when: not rt.stat.exists
+  unarchive:
+    remote_src: yes
+    src: /var/tmp/recent.zip
+    dest: /var/tmp
+
+- name: Move recent topics to phpbb
+  shell: mv /var/tmp/paybas /var/www/hitrye/ext/
+  args:
+    creates: /var/www/hitrye/ext/paybas/recenttopics/ext.php
+
+- name: Cleanup recent topics
+  file:
+    path: /var/tmp/{{ item }}
+    state: absent
+  with_items:
+    - recent.zip
+    - paybas

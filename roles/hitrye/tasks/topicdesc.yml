@@ -1,0 +1,32 @@
+---
+- name: Check that topic desc is installed
+  stat:
+    path: /var/www/hitrye/ext/rmcgirr83/topicdescription/composer.json
+  register: td
+
+- name: Download Topic Descriptions extension
+  when: not td.stat.exists
+  get_url:
+    url: https://www.phpbb.com/customise/db/download/154261
+    dest: /var/tmp/topicdesc.zip
+    checksum: md5:de98d7780af1e2f4abdc181cd75f4411
+
+- name: Unpack topic desc
+  when: not td.stat.exists
+  unarchive:
+    remote_src: yes
+    src: /var/tmp/topicdesc.zip
+    dest: /var/tmp
+
+- name: Move topic desc to phpbb
+  shell: mv /var/tmp/rmcgirr83 /var/www/hitrye/ext/
+  args:
+    creates: /var/www/hitrye/ext/rmcgirr83/topicdescription/composer.json
+
+- name: Cleanup topic desc
+  file:
+    path: /var/tmp/{{ item }}
+    state: absent
+  with_items:
+    - topicdesc.zip
+    - rmcgirr83

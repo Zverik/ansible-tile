@@ -1,0 +1,15 @@
+---
+- name: Install php packages
+  apt: pkg={{ item }}
+  with_items:
+    - php
+    - php-gd
+    - php-imagick
+    - php-json
+    - php-mcrypt
+    - php-pgsql
+    - php-xml
+    - php-zip
+    - libapache2-mod-php
+    - imagemagick
+    - unzip

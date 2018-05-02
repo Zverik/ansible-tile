@@ -1,0 +1,42 @@
+---
+- name: Install all required packages
+  become: yes
+  apt: pkg={{ item }} state=present
+  with_items:
+    - ruby2.3
+    - libruby2.3
+    - ruby2.3-dev
+    - libmagickwand-dev
+    - libxml2-dev
+    - libxslt1-dev
+    - nodejs
+    - apache2-dev
+    - build-essential
+    - libpq-dev
+    - postgresql-server-dev-all
+    - libsasl2-dev
+    - imagemagick
+    - libffi-dev
+
+- name: Install bundler
+  become: yes
+  gem: name=bundler state=present
+
+# TODO: employ {{ rails_port_user }}
+
+- name: Clone osm-website
+  git:
+    repo: https://github.com/zverik/openstreetmap-website.git
+    branch: mapsme
+    path: /opt/src/openstreetmap-website
+
+- name: Install gems
+  bundler:
+    chdir: /opt/src/openstreetmap-website
+    state: present
+
+- name: Copy application config
+  copy:
+    remote_src: yes
+    src: /opt/src/openstreetmap-website/config/example.application.yml
+    file: /opt/src/openstreetmap-website/config/application.yml

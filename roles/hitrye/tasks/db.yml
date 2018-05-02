@@ -1,0 +1,17 @@
+---
+- name: Create phpbb user
+  postgresql_user: name=phpbb
+
+- name: Create phpbb database
+  postgresql_db:
+    name: hitrye
+    encoding: UTF-8
+    owner: phpbb
+
+- name: Allow logging in as phpbb by anybody
+  lineinfile:
+    path: /etc/postgresql/9.5/main/pg_hba.conf
+    insertafter: '# TYPE\s*DATABASE'
+    regexp: '^local hitrye'
+    line: local hitrye phpbb trust
+  notify: restart postgresql

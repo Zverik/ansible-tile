@@ -17,6 +17,8 @@
     - firewall
     - postgis
     - python3
+    - php
+    - ruby_passenger
     - icecast
 
 - hosts: all
@@ -30,3 +32,6 @@
     - queryat
     - a5a4
     - stats
+    - mmwatch
+    - hitrye
+    - rails_port

@@ -1,0 +1,25 @@
+---
+- name: Check that borg is not installed
+  stat:
+    path: /usr/bin/borg
+  register: b
+
+- name: Download borg
+  when: not b.stat.exists
+  get_url:
+    url: https://github.com/borgbackup/borg/releases/download/1.1.5/borg-linux64
+    dest: /usr/local/bin/borg
+    mode: 0755
+    checksum: md5:f61a7a03a6e2b946d35e3fbd73fbe964
+
+- name: Create a private key
+  copy:
+    content: "{{ borg_key }}"
+    dest: /root/.ssh/borg
+    mode: 0600
+
+- name: Install backup script
+  template:
+    src: backup_hitrye.j2
+    dest: /etc/cron.daily/backup_hitrye
+    mode: 0700

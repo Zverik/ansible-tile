@@ -1,0 +1,97 @@
+---
+- name: Check that phpbb is installed
+  stat:
+    path: /var/www/hitrye/index.php
+  register: phpbb
+
+- name: Check that language is installed
+  stat:
+    path: /var/www/hitrye/language/ru/common.php
+  register: phpbbl
+
+- name: Download phpbb
+  when: not phpbb.stat.exists
+  get_url:
+    url: https://www.phpbb.com/files/release/phpBB-{{ phpbb_version }}.zip
+    dest: /var/tmp/phpbb.zip
+    checksum: sha256:ea59e6a9404916bf7937003bdea5fd6aa41f9b7463f7dff3b39c277207ba7bfa
+
+- name: Download Russian language pack
+  when: not phpbbl.stat.exists
+  get_url:
+    url: "{{ phpbb_lang.url }}"
+    dest: /var/tmp/phpbb-ru.zip
+    checksum: "{{ phpbb_lang.checksum }}"
+
+- name: Create target dir
+  become: yes
+  file:
+    path: /var/www/hitrye
+    owner: zverik
+    group: zverik
+    state: directory
+
+- name: Unpack phpbb
+  when: not phpbb.stat.exists
+  unarchive:
+    remote_src: yes
+    src: /var/tmp/phpbb.zip
+    dest: /var/tmp
+
+- name: Unpack langpack
+  when: not phpbbl.stat.exists
+  unarchive:
+    remote_src: yes
+    src: /var/tmp/phpbb-ru.zip
+    dest: /var/tmp
+
+- name: Move phpbb to /var/www
+  shell: mv /var/tmp/phpBB3/* /var/www/hitrye/
+  args:
+    creates: /var/www/hitrye/index.php
+
+- name: Copy language to phpbb installation
+  shell: cp -r /var/tmp/{{ phpbb_lang.dir }}/* /var/www/hitrye/
+  args:
+    creates: /var/www/hitrye/language/ru/common.php
+
+- name: Delete phpbb.zip
+  file:
+    path: /var/tmp/{{ item }}
+    state: absent
+  with_items:
+    - phpbb.zip
+    - phpbb-ru.zip
+    - phpBB3
+    - "{{ phpbb_lang.dir }}"
+
+- name: Upload config.php
+  copy:
+    src: config.php
+    dest: /var/www/hitrye/config.php
+
+- name: Chmod user directories
+  file:
+    path: /var/www/hitrye/{{ item }}
+    mode: 0777
+    state: directory
+  with_items:
+    - store
+    - cache
+    - files 
+    - images/avatars/upload
+
+- name: Delete install directory
+  file:
+    path: /var/www/hitrye/install
+    state: absent
+
+- name: Copy old smilies
+  copy:
+    src: "{{ item }}"
+    dest: /var/www/hitrye/images/smilies/{{ item }}
+  with_items:
+    - icon_e_biggrin.gif
+    - icon_e_sad.gif
+    - icon_e_smile.gif
+    - icon_e_wink.gif

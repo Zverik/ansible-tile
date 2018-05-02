@@ -14,6 +14,7 @@
     path: /etc/munin/apache24.conf
     regexp: '^(\s*)Require local.*$'
     replace: '\1Require all granted'
+  notify: reload apache
 
 - name: Find mod_tile plugins
   find:
@@ -52,6 +53,4 @@
   become: yes
   # TODO: get rid of shell
   shell: munin-node-configure --sh | sh
-  notify:
-    - restart munin
-    - reload apache
+  notify: restart munin
