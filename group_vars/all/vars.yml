@@ -12,6 +12,9 @@ icecast_admin_password: "{{ v_icecast_admin_password }}"
 icecast_relay_password: "{{ v_icecast_source_password }}"
 icecast_source_password: "{{ v_icecast_source_password }}"
 
+a5a4_password: "{{ v_a5a4_password }}"
+a5a4_secret: "{{ v_a5a4_secret }}"
+
 rails_secret: "{{ v_rails_secret }}"
 google_auth_id: "{{ v_google_auth_id }}"
 google_auth_secret: "{{ v_google_auth_secret }}"

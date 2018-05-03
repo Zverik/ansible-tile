@@ -3,7 +3,7 @@
 #
 # Parameters:
 # - pbf: name of a pbf file to upload
-# - state: number of the last minutely diff applied to that pbf
+# - state: optional, number of the last minutely diff applied to that pbf
 # - bounds: optional, geojson file with trim bounds
 #
 - hosts: all
@@ -30,6 +30,15 @@
       become: yes
       systemd: name=renderd state=stopped
 
+    - name: Install osmium-tool
+      become: yes
+      apt: pkg=osmium-tool state=present
+
+    - name: Get timestamp of the last change in the file
+      command: osmium fileinfo -e --no-progress -g data.timestamp.last "{{ planet }}"
+      register: lastdate
+      changed_when: False
+
     - name: Import pbf
       become_user: "{{ render_user }}"
       become: yes
@@ -42,10 +51,17 @@
         state: absent
 
     - name: Update replication state
+      when: state
       lineinfile:
         name: /var/lib/mod_tile/.osmosis/state.txt
         regexp: '^sequenceNumber'
         line: "sequenceNumber={{ state }}"
+
+    - name: Download relevant state
+      when: not state
+      get_url:
+        url: "https://replicate-sequences.osm.mazdermind.de/?{{ lastdate.stdout }}"
+        dest: /var/lib/mod_tile/.osmosis/state.txt
 
     - name: Update bounds for trim_osc
       when: bounds

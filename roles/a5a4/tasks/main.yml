@@ -35,6 +35,7 @@
   become: yes
   blockinfile:
     path: /etc/apache2/sites-available/get_veloroad.conf
+    create: yes
     marker: '# {mark} a5a4'
     block: |
       WSGIScriptAlias /a5a4 /opt/src/a5a4/a5a4.wsgi
