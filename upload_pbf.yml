@@ -9,8 +9,7 @@
 - hosts: all
   remote_user: zverik
   vars:
-    style: "{{ style | default('/opt/styles/veloroad/veloroad.style') }}"
-    database: "{{ gisdb }}"
+    style: '/opt/styles/veloroad/veloroad.style'
     planet: /var/tmp/planet.osm.pbf
     render_user: osm
   tasks:
@@ -18,32 +17,52 @@
       copy:
         src: "{{ pbf }}"
         dest: "{{ planet }}"
-        force: yes
 
     - name: Stop db updates
+      become: yes
+      become_user: "{{ render_user }}"
       cron:
         name: replication
         disabled: yes
-        user: "{{ render_user }}"
+        job: /opt/src/openstreetmap-tiles-update-expire
+        minute: '*/5'
 
     - name: Stop renderd
       become: yes
       systemd: name=renderd state=stopped
 
     - name: Install osmium-tool
+      when: state is not defined
       become: yes
       apt: pkg=osmium-tool state=present
 
     - name: Get timestamp of the last change in the file
-      command: osmium fileinfo -e --no-progress -g data.timestamp.last "{{ planet }}"
+      when: state is not defined
+      command: osmium fileinfo -e -g data.timestamp.last "{{ planet }}"
       register: lastdate
       changed_when: False
 
     - name: Import pbf
       become_user: "{{ render_user }}"
       become: yes
-      command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim -S "{{ style }}" -d {{ database }} --number-processes 2 "{{ planet }}"
+      command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim -S "{{ style }}" -d {{ gisdb }} --number-processes 2 "{{ planet }}"
       async: 3600
+      poll: 0
+      register: osm2pgsql_job
+      environment:
+        ANSIBLE_ASYNC_DIR: /tmp/ansible_async
+
+    - name: Wait for osm2pgsql to finish
+      become_user: "{{ render_user }}"
+      become: yes
+      async_status:
+        jid: "{{ osm2pgsql_job.ansible_job_id }}"
+      register: osm2pgsql_status
+      until: osm2pgsql_status.finished
+      retries: 300
+      delay: 30
+      environment:
+        ANSIBLE_ASYNC_DIR: /tmp/ansible_async
 
     - name: Remove pbf
       file:
@@ -51,35 +70,50 @@
         state: absent
 
     - name: Update replication state
-      when: state
+      when: state is defined
+      become_user: "{{ render_user }}"
+      become: yes
       lineinfile:
         name: /var/lib/mod_tile/.osmosis/state.txt
         regexp: '^sequenceNumber'
         line: "sequenceNumber={{ state }}"
 
     - name: Download relevant state
-      when: not state
+      when: state is not defined
+      become_user: "{{ render_user }}"
+      become: yes
       get_url:
         url: "https://replicate-sequences.osm.mazdermind.de/?{{ lastdate.stdout }}"
         dest: /var/lib/mod_tile/.osmosis/state.txt
+        force: yes
 
     - name: Update bounds for trim_osc
-      when: bounds
+      when: bounds is defined
       copy:
         src: "{{ bounds }}"
         dest: /opt/styles/bounds.json
+        force: yes
+
+    - name: Check that nik4wsgi is installed
+      stat:
+        path: /opt/src/nik4wsgi
+      register: nik4w
 
     - name: Update bounds for nik4wsgi
-      when: bounds
+      when: bounds is defined and nik4w.stat.exists
       copy:
         src: "{{ bounds }}"
         dest: /opt/src/nik4wsgi/www/static/bounds.geojson
+        force: yes
     
     - name: Start db updates
+      become: yes
+      become_user: "{{ render_user }}"
       cron:
         name: replication
         disabled: no
-        user: "{{ render_user }}"
+        job: /opt/src/openstreetmap-tiles-update-expire
+        minute: '*/5'
 
     - name: Start renderd
       become: yes

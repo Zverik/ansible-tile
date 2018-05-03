@@ -116,7 +116,7 @@ else
     
     if [ -e "$BOUNDS_POLY" ]; then
       m_ok "filtering diff"
-      if ! "$TRIM_OSC" -v -d gis -p "$BOUNDS_POLY" -z $CHANGE_FILE $CHANGE_FILE 1>&2 2>> "$RUNLOG"; then
+      if ! python3 "$TRIM_OSC" -v -d gis -p "$BOUNDS_POLY" -z $CHANGE_FILE $CHANGE_FILE 1>&2 2>> "$RUNLOG"; then
           m_error "Trim_osc error"
       fi
     fi

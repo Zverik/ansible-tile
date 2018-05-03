@@ -1,4 +1,11 @@
 ---
+- name: Install packages for trim_osc
+  become: yes
+  apt: pkg={{ item }}
+  with_items:
+    - python3-shapely
+    - python3-lxml
+
 - name: Get trim_osc
   git:
     repo: https://github.com/Zverik/regional.git
