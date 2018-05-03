@@ -17,7 +17,6 @@
     - firewall
     - postgis
     - python3
-    - php
     - icecast
 
 - hosts: all

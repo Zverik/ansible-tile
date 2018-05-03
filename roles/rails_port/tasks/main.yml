@@ -56,45 +56,8 @@
   become_user: postgres
   import_tasks: db.yml
 
-- name: Compile db function
-  command: make libpgosm.so
-  args:
-    chdir: /opt/src/openstreetmap-website/db/functions
-    creates: libpgosm.so
-
-- name: Check that db functions are not installed
-  command: psql -A -t -U rails -d openstreetmap -c "SELECT 'xid_to_int4'::regproc"
-  register: func
-  changed_when: False
-  failed_when: False
-
-- name: Install db functions
-  when: func.stderr
-  become: yes
-  become_user: postgres
-  command: psql -d openstreetmap -c "CREATE FUNCTION {{ item.name }}({{ item.args }}) RETURNS {{ item.ret }} AS '/opt/src/openstreetmap-website/db/functions/libpgosm', '{{ item.name }}' LANGUAGE C STRICT"
-  with_items:
-    - {name: maptile_for_point, args: 'int8, int8, int4', ret: int4}
-    - {name: tile_for_point, args: 'int4, int4', ret: in8}
-    - {name: xid_to_int4, args: 'xid', ret: int4}
-
-- name: Migrate db
-  command: bundle exec rake db:migrate
-  args:
-    chdir: /opt/src/openstreetmap-website
-
-- name: Check that structure.sql needs reverting
-  command: git status -s db/structure.sql
-  args:
-    chdir: /opt/src/openstreetmap-website
-  changed_when: False
-  register: structure
-
-- name: Revert db/structure.sql if needed
-  when: structure.stdout
-  command: git checkout -- db/structure.sql
-  args:
-    chdir: /opt/src/openstreetmap-website
+- name: Create tables and functions
+  import_tasks: db_post.yml
 
 - name: Precompile assets
   shell: RAILS_ENV=production bundle exec rake assets:precompile

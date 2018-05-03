@@ -1,4 +1,8 @@
 ---
+- name: Install PHP
+  become: yes
+  import_tasks: php.yml
+
 - name: Install phpBB {{ phpbb_version }}
   import_tasks: phpbb.yml
 

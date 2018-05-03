@@ -40,3 +40,4 @@
     name: replication
     job: /opt/src/openstreetmap-tiles-update-expire
     minute: '*/5'
+    state: present
