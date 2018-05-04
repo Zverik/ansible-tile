@@ -22,3 +22,7 @@ facebook_auth_id: "{{ v_facebook_auth_id }}"
 facebook_auth_secret: "{{ v_facebook_auth_secret }}"
 mapsme_auth_id: "{{ v_mapsme_auth_id }}"
 mapsme_auth_secret: "{{ v_mapsme_auth_secret }}"
+
+borg_repo: "{{ v_borg_repo }}"
+borg_pass: "{{ v_borg_pass }}"
+borg_key: "{{ v_borg_key }}"
