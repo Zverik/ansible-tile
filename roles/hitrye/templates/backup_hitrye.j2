@@ -9,7 +9,11 @@ export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
 DBDUMP=/var/tmp/hitrye.sql
 pg_dump -U phpbb --format=c --file=$DBDUMP hitrye
 
-$BORG create --compression zstd,5 ::'Hitrye_{now:%Y-%m-%d_%H%M}' $DBDUMP
+$BORG create --compression zstd,5 ::'Hitrye_{now:%Y-%m-%d_%H%M}' \
+  $DBDUMP \
+  /var/www/hitrye/files \
+  /var/www/hitrye/images/avatars/upload
+
 $BORG prune --prefix 'Hitrye_' --keep-daily=7 --keep-weekly=2 --keep-monthly=3
 
 rm $DBDUMP
