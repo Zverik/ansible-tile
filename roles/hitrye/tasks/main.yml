@@ -12,6 +12,9 @@
 - name: Install Recent Topics extension
   import_tasks: recent_topics.yml
 
+- name: Install Topic Tags extension
+  import_tasks: tags.yml
+
 - name: Create database
   become: yes
   become_user: postgres
