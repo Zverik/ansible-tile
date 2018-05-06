@@ -59,6 +59,12 @@
     chdir: /opt/styles/{{ dir }}
     creates: /opt/styles/{{ dir }}/osm.xml
 
+- name: Replace tables names in osm-carto
+  replace:
+    path: /opt/styles/{{ dir }}/osm.xml
+    regexp: 'planet_osm_'
+    replace: 'old_'
+
 - name: Add renderd section for osm-carto
   become: yes
   blockinfile:
