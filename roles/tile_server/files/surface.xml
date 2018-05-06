@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Map[]>
+<Map srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over">
+
+<Parameters>
+  <Parameter name="bounds">-180,-85.05112877980659,180,85.05112877980659</Parameter>
+  <Parameter name="center">0,0,2</Parameter>
+  <Parameter name="format">png8</Parameter>
+  <Parameter name="minzoom">0</Parameter>
+  <Parameter name="maxzoom">22</Parameter>
+  <Parameter name="scale">1</Parameter>
+  <Parameter name="metatile">2</Parameter>
+  <Parameter name="name"><![CDATA[surface]]></Parameter>
+</Parameters>
+
+
+<Style name="roads" filter-mode="first">
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] != null) and ([surface] != 'asphalt') and ([surface] != 'compacted') and ([surface] != 'paved') and ([surface] != 'concrete') and ([surface] != 'concrete:plates') and ([surface] != 'gravel')</Filter>
+    <LineSymbolizer stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke="#0469b2" />
+    <TextSymbolizer face-name="PT Sans Regular" placement="line" dy="7" size="12" ><![CDATA[[surface]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] != null) and ([surface] != 'asphalt') and ([surface] != 'compacted') and ([surface] != 'paved') and ([surface] != 'concrete') and ([surface] != 'concrete:plates') and ([surface] != 'gravel')</Filter>
+    <LineSymbolizer stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#0469b2" />
+    <TextSymbolizer face-name="PT Sans Regular" placement="line" dy="7" size="12" ><![CDATA[[surface]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] = null)</Filter>
+    <LineSymbolizer stroke-width="8" stroke="#ff5858" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] = null)</Filter>
+    <LineSymbolizer stroke-width="4" stroke="#ff5858" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] = 'asphalt')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] = 'asphalt')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] = 'compacted')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] = 'compacted')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] = 'concrete')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] = 'concrete')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] = 'concrete:plates')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] = 'concrete:plates')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] = 'gravel')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] = 'gravel')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <Filter>([surface] = 'paved')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <Filter>([surface] = 'paved')</Filter>
+    <LineSymbolizer stroke="#0baa0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>400000</MaxScaleDenominator>
+    <LineSymbolizer stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke="#0469b2" />
+  </Rule>
+  <Rule>
+    <MinScaleDenominator>400000</MinScaleDenominator>
+    <LineSymbolizer stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#0469b2" />
+  </Rule>
+</Style>
+<Layer name="roads"
+  srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over">
+    <StyleName>roads</StyleName>
+    <Datasource>
+       <Parameter name="type"><![CDATA[postgis]]></Parameter>
+       <Parameter name="table"><![CDATA[(select way, highway, surface, (case when smoothness is not null or "surface:grade" is not null then 1 else 0 end) as smoothness from planet_osm_line where highway in ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary') order by surface) as roads]]></Parameter>
+       <Parameter name="key_field"><![CDATA[]]></Parameter>
+       <Parameter name="geometry_field"><![CDATA[way]]></Parameter>
+       <Parameter name="extent_cache"><![CDATA[auto]]></Parameter>
+       <Parameter name="extent"><![CDATA[-20037508.34,-20037508.34,20037508.34,20037508.34]]></Parameter>
+       <Parameter name="dbname"><![CDATA[gis]]></Parameter>
+    </Datasource>
+  </Layer>
+
+</Map>

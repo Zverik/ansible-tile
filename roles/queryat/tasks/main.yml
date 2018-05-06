@@ -47,7 +47,24 @@
   become_user: "{{ render_user }}"
   become: yes
   command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim --drop --prefix at --latlong -S /opt/src/queryat/at.style -d {{ gisdb }} --number-processes {{ ansible_processor_cores}} /var/tmp/at.osm.pbf
-  async: 1200
+  async: 7200
+  poll: 0
+  register: osm2pgsql_job
+  environment:
+    ANSIBLE_ASYNC_DIR: /tmp/ansible_async
+
+- name: Wait for osm2pgsql to finish
+  when: not has_polygon.stdout
+  become_user: "{{ render_user }}"
+  become: yes
+  async_status:
+    jid: "{{ osm2pgsql_job.ansible_job_id }}"
+  register: osm2pgsql_status
+  until: osm2pgsql_status.finished
+  retries: 120
+  delay: 60
+  environment:
+    ANSIBLE_ASYNC_DIR: /tmp/ansible_async
 
 - name: Remove admin borders pbf
   when: not has_polygon.stdout

@@ -1,11 +1,4 @@
 ---
-- name: Chown /var/www/html to zverik
-  become: yes
-  file:
-    path: /var/www/html
-    owner: zverik
-    group: zverik
-
 - name: Upload make_stat
   copy:
     src: make_stat.sh

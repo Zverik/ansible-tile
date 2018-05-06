@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Map [
+<!ENTITY srs900913 "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over">
+<!ENTITY distance "3000">
+]>
+<Map srs="&srs900913;" background-color="rgba(0,0,0,0)">
+
+  <Style name="s62">
+  <Rule>
+	<!--MaxScaleDenominator>750000</MaxScaleDenominator-->
+	<PolygonSymbolizer fill="red" fill-opacity="0.5"/>
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>100000</MaxScaleDenominator>
+    <TextSymbolizer size="12" face-name="PT Sans Regular" halo-fill="rgba(255, 255, 255, 0.7)" allow-overlap="false" ><![CDATA[[place]+'\n'+[name]]]></TextSymbolizer>
+  </Rule>
+  </Style>
+    <Layer name="l63" status="on" srs="&srs900913;">
+      <StyleName>s62</StyleName>
+      <Datasource>
+        <Parameter name="table">
+(
+select p.name,p.place,ST_Buffer(p.way,&distance;) as way
+from (select way,name,place from planet_osm_point where way &amp;&amp; st_expand(!bbox!,&distance;) and place in ('hamlet', 'village', 'town', 'suburb', 'allotments')) p
+LEFT OUTER JOIN planet_osm_line l on ((l.highway in ('residential', 'unclassified', 'tertiary', 'secondary', 'primary', 'trunk') or l.railway in ('rail', 'narrow_gauge')) and ST_DWithin(p.way,l.way,&distance;))
+where l.highway is NULL and l.railway is NULL
+        ) as text
+        </Parameter>
+        <Parameter name="srid">900913</Parameter>
+        <Parameter name="geometry_field">way</Parameter>
+        <Parameter name="geometry_table">planet_osm_point</Parameter>
+	<Parameter name="type">postgis</Parameter>
+       <Parameter name="key_field"><![CDATA[]]></Parameter>
+       <Parameter name="extent_cache"><![CDATA[auto]]></Parameter>
+	<Parameter name="extent">-20037508,-19929239,20037508,19929239</Parameter>
+       <Parameter name="dbname"><![CDATA[gis]]></Parameter>
+      </Datasource>
+    </Layer>
+</Map>

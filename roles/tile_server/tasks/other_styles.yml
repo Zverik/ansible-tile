@@ -1,0 +1,44 @@
+---
+- name: Upload small styles
+  copy:
+    src: "{{ item }}"
+    dest: /opt/styles/{{ item }}
+  with_items:
+    - lonelyplaces.xml
+    - smoothness.xml
+    - surface.xml
+
+- name: Add renderd sections for these styles
+  become: yes
+  blockinfile:
+    path: /usr/local/etc/renderd.conf
+    insertafter: EOF
+    marker: '# {mark} small styles'
+    block: |
+      [smoothness]
+      URI=/smoothness/
+      TILEDIR=/var/lib/mod_tile
+      XML=/opt/styles/smoothness.xml
+      HOST={{ render_host }}
+      TILESIZE=256
+      MINZOOM=10
+      MAXZOOM=16
+
+      [surface]
+      URI=/surface/
+      TILEDIR=/var/lib/mod_tile
+      XML=/opt/styles/surface.xml
+      HOST={{ render_host }}
+      TILESIZE=256
+      MINZOOM=6
+      MAXZOOM=15
+
+      [lonely]
+      URI=/lonely/
+      TILEDIR=/var/lib/mod_tile
+      XML=/opt/styles/lonelyplaces.xml
+      HOST={{ render_host }}
+      TILESIZE=256
+      MINZOOM=6
+      MAXZOOM=15
+

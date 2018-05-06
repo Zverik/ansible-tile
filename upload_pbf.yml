@@ -46,7 +46,7 @@
       become_user: "{{ render_user }}"
       become: yes
       command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim -S "{{ style }}" -d {{ gisdb }} --number-processes 2 "{{ planet }}"
-      async: 3600
+      async: 7200
       poll: 0
       register: osm2pgsql_job
       environment:

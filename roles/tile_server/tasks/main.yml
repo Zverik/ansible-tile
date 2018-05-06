@@ -22,6 +22,9 @@
 - name: Install veloroad style
   import_tasks: veloroad.yml
 
+- name: Install small testing styles
+  import_tasks: other_styles.yml
+
 - name: Install sample pbf file
   import_tasks: sample_pbf.yml
 

@@ -11,6 +11,7 @@
     - libxml2-dev
     - libxslt1-dev
     - libapache2-mod-passenger
+    - postgresql-server-dev-all
 
 #- name: Install bundler - does not work!
 #  become: yes
@@ -23,6 +24,7 @@
   command: which bundle
   register: bundle
   changed_when: False
+  ignore_errors: yes
 
 - name: Install bundler
   when: bundle.failed

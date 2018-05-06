@@ -24,7 +24,24 @@
   become_user: "{{ render_user }}"
   become: yes
   command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim --drop --hstore -G --prefix old -S /opt/styles/osm-carto-4/openstreetmap-carto.style --tag-transform-script /opt/styles/osm-carto-4/openstreetmap-carto.lua -d {{ gisdb }} --number-processes {{ ansible_processor_cores}} /var/tmp/planet-2008.osm.pbf
-  async: 1800
+  async: 7200
+  poll: 0
+  register: osm2pgsql_job
+  environment:
+    ANSIBLE_ASYNC_DIR: /tmp/ansible_async
+
+- name: Wait for osm2pgsql to finish
+  when: not has_2008.stdout
+  become_user: "{{ render_user }}"
+  become: yes
+  async_status:
+    jid: "{{ osm2pgsql_job.ansible_job_id }}"
+  register: osm2pgsql_status
+  until: osm2pgsql_status.finished
+  retries: 120
+  delay: 60
+  environment:
+    ANSIBLE_ASYNC_DIR: /tmp/ansible_async
 
 - name: Remove old osm pbf
   when: not has_2008.stdout
