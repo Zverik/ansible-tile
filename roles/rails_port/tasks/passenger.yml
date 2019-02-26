@@ -1,6 +1,6 @@
 ---
 - name: Install mod_passenger
-  apt: pkg=libapache2-mod-passenger
+  apt: name=libapache2-mod-passenger
 
 - name: Enable mod_env
   apache2_module:

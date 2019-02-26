@@ -1,15 +1,16 @@
 ---
 - name: Install packages for mod_tile
   become: yes
-  apt: pkg={{ item }}
-  with_items:
-    - apache2-dev
-    - git
-    - autoconf
-    - automake
-    - m4
-    - libtool
-    - libmapnik-dev
+  apt:
+    name:
+      - apache2-dev
+      - git
+      - autoconf
+      - automake
+      - m4
+      - libtool
+      - libmapnik-dev
+    state: present
 
 - name: Download mod_tile
   git:

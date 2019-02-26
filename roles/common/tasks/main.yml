@@ -9,7 +9,7 @@
   changed_when: False
 
 - name: install setfacl support
-  apt: pkg=acl
+  apt: name=acl
 
 - name: Create zverik user
   user: name=zverik shell=/bin/bash
@@ -26,13 +26,14 @@
     dest: /etc/sudoers.d/zverik
 
 - name: Install useful packages
-  apt: pkg={{ item }}
-  with_items:
-    - tmux
-    - htop
-    - jq
-    - ncdu
-    - vim
+  apt:
+    name:
+      - tmux
+      - htop
+      - jq
+      - ncdu
+      - vim
+    state: present
 
 - name: Create /opt/src directory
   file:

@@ -1,17 +1,18 @@
 ---
 - name: Install all required packages
   become: yes
-  apt: pkg={{ item }} state=present
-  with_items:
-    - ruby2.3
-    - libruby2.3
-    - ruby2.3-dev
-    - imagemagick
-    - libmagickwand-dev
-    - libxml2-dev
-    - libxslt1-dev
-    - libapache2-mod-passenger
-    - postgresql-server-dev-all
+  apt:
+    name:
+      - ruby2.3
+      - libruby2.3
+      - ruby2.3-dev
+      - imagemagick
+      - libmagickwand-dev
+      - libxml2-dev
+      - libxslt1-dev
+      - libapache2-mod-passenger
+      - postgresql-server-dev-all
+    state: present
 
 #- name: Install bundler - does not work!
 #  become: yes

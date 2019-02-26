@@ -1,16 +1,17 @@
 ---
 - name: Install packages for osm-carto
   become: yes
-  apt: pkg={{ item }}
-  with_items:
-    - fonts-noto-cjk
-    - fonts-noto-hinted
-    - fonts-noto-unhinted
-    - ttf-unifont
-    - npm
-    - nodejs-legacy
-    - mapnik-utils
-    - curl
+  apt:
+    name:
+      - fonts-noto-cjk
+      - fonts-noto-hinted
+      - fonts-noto-unhinted
+      - ttf-unifont
+      - npm
+      - nodejs-legacy
+      - mapnik-utils
+      - curl
+    state: present
 
 - name: Install carto and millstone
   become: yes

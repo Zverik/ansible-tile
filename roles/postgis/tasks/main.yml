@@ -5,11 +5,12 @@
     createhome: no
 
 - name: Install PostgreSQL and PostGIS
-  apt: pkg={{ item }}
-  with_items:
-    - postgresql-9.5-postgis-2.2
-    - postgresql-contrib-9.5
-    - python-psycopg2
+  apt:
+    name:
+      - postgresql-9.5-postgis-2.2
+      - postgresql-contrib-9.5
+      - python-psycopg2
+    state: present
 
 - name: Create database roles
   become: yes

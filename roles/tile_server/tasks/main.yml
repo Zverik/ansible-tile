@@ -4,11 +4,12 @@
 
 - name: Install tile packages
   become: yes
-  apt: pkg={{ item }}
-  with_items:
-    - osm2pgsql
-    - osmosis
-    - libmapnik3.0
+  apt:
+    name:
+      - osm2pgsql
+      - osmosis
+      - libmapnik3.0
+    state: present
 
 - name: Install mod_tile
   import_tasks: mod_tile.yml

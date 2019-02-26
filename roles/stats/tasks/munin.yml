@@ -1,12 +1,13 @@
 ---
 - name: Install munin packages
   become: yes
-  apt: pkg={{ item }}
-  with_items:
-    - munin
-    - munin-node
-    - munin-plugins-extra
-    - libdbd-pg-perl
+  apt:
+    name:
+      - munin
+      - munin-node
+      - munin-plugins-extra
+      - libdbd-pg-perl
+    state: present
 
 - name: Allow outside access to munin
   become: yes

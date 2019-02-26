@@ -1,10 +1,11 @@
 ---
 - name: Install packages for trim_osc
   become: yes
-  apt: pkg={{ item }}
-  with_items:
-    - python3-shapely
-    - python3-lxml
+  apt:
+    name:
+      - python3-shapely
+      - python3-lxml
+    state: present
 
 - name: Get trim_osc
   git:

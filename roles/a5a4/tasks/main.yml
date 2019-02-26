@@ -1,11 +1,12 @@
 ---
 - name: Install pdftk and pdfjam
   become: yes
-  apt: pkg={{ item }}
-  with_items:
-    - imagemagick
-    - pdftk
-    - texlive-extra-utils
+  apt:
+    name:
+      - imagemagick
+      - pdftk
+      - texlive-extra-utils
+    state: present
 
 - name: Checkout a5a4
   git:

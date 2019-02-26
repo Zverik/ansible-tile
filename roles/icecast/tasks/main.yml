@@ -1,6 +1,6 @@
 ---
 - name: Install icecast
-  apt: pkg=icecast2
+  apt: name=icecast2
 
 - name: Upload configuration file
   template: 

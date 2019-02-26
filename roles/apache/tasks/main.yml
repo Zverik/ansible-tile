@@ -1,6 +1,6 @@
 ---
 - name: Install Apache
-  apt: pkg=apache2
+  apt: name=apache2
 
 - name: Enable cgi for apache
   apache2_module:
