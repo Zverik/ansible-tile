@@ -1,0 +1,24 @@
+---
+- name: Checkout podcasts
+  git:
+    repo: https://github.com/Zverik/podcast_duration.git
+    dest: /opt/src/podcast_duration
+  notify: touch podcasts
+
+- name: Create virtualenv for podcasts
+  pip:
+    name: flask
+    virtualenv: /opt/src/podcast_duration/venv
+    virtualenv_python: python3.5
+
+- name: Set up mod_wsgi for podcasts
+  become: yes
+  blockinfile:
+    path: /etc/apache2/sites-available/get_veloroad.conf
+    marker: '# {mark} podcasts'
+    block: |
+      WSGIScriptAlias /pdur /opt/src/podcast_duration/podcast_duration_web.wsgi
+      <Directory /opt/src/podcast_duration>
+          Require all granted
+      </Directory>
+  notify: reload apache
