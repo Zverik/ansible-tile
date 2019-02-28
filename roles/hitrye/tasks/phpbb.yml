@@ -1,23 +1,39 @@
 ---
 - name: Check that phpbb is installed
   stat:
-    path: /var/www/hitrye/index.php
-  register: phpbb
+    path: "{{ hitrye_path }}/index.php"
+  register: phpbbf
 
 - name: Check that language is installed
   stat:
-    path: /var/www/hitrye/language/ru/common.php
+    path: "{{ hitrye_path }}/language/ru/common.php"
   register: phpbbl
 
+- name: Read the installed version
+  when: phpbbf.stat.exists
+  slurp:
+    src: /opt/phpbb.version
+  register: version64
+
+- name: Parse the installed version
+  when: version64.content is defined
+  set_fact:
+    phpbb_server_version: "{{ version64.content | b64decode | trim }}"
+
+- name: Alternatively, set installed version to a dummy
+  when: phpbb_server_version is not defined
+  set_fact:
+    phpbb_server_version: old
+
 - name: Download phpbb
-  when: not phpbb.stat.exists
+  when: phpbb_server_version != phpbb.version
   get_url:
-    url: https://www.phpbb.com/files/release/phpBB-{{ phpbb_version }}.zip
+    url: https://www.phpbb.com/files/release/phpBB-{{ phpbb.version }}.zip
     dest: /var/tmp/phpbb.zip
-    checksum: sha256:ea59e6a9404916bf7937003bdea5fd6aa41f9b7463f7dff3b39c277207ba7bfa
+    checksum: "{{ phpbb.checksum }}"
 
 - name: Download Russian language pack
-  when: not phpbbl.stat.exists
+  when: phpbb_server_version != phpbb.version
   get_url:
     url: "{{ phpbb_lang.url }}"
     dest: /var/tmp/phpbb-ru.zip
@@ -26,34 +42,56 @@
 - name: Create target dir
   become: yes
   file:
-    path: /var/www/hitrye
+    path: "{{ hitrye_path }}"
     owner: zverik
     group: zverik
     state: directory
 
 - name: Unpack phpbb
-  when: not phpbb.stat.exists
+  when: phpbb_server_version != phpbb.version
   unarchive:
     remote_src: yes
     src: /var/tmp/phpbb.zip
     dest: /var/tmp
 
 - name: Unpack langpack
-  when: not phpbbl.stat.exists
+  when: phpbb_server_version != phpbb.version
   unarchive:
     remote_src: yes
     src: /var/tmp/phpbb-ru.zip
     dest: /var/tmp
 
 - name: Move phpbb to /var/www
-  shell: mv /var/tmp/phpBB3/* /var/www/hitrye/
+  when: not phpbbf.stat.exists
+  shell: "mv /var/tmp/phpBB3/* {{ hitrye_path }}/"
   args:
-    creates: /var/www/hitrye/index.php
+    creates: "{{ hitrye_path }}/index.php"
+
+- name: Find old phpbb files to remove
+  when:
+    - phpbbf.stat.exists
+    - phpbb_server_version != phpbb.version
+  find:
+    path: "{{ hitrye_path }}"
+    file_type: any
+    recurse: no
+    excludes:
+      - config.php
+      - images
+      - files
+  register: hitrye_files
+
+- name: Remove old phpbb files
+  when: hitrye_files.files is defined
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ hitrye_files.files }}"
 
 - name: Copy language to phpbb installation
-  shell: cp -r /var/tmp/{{ phpbb_lang.dir }}/* /var/www/hitrye/
+  shell: "cp -r /var/tmp/{{ phpbb_lang.dir }}/* {{ hitrye_path }}/"
   args:
-    creates: /var/www/hitrye/language/ru/common.php
+    creates: "{{ hitrye_path }}/language/ru/common.php"
 
 - name: Delete phpbb.zip
   file:
@@ -68,11 +106,11 @@
 - name: Upload config.php
   copy:
     src: config.php
-    dest: /var/www/hitrye/config.php
+    dest: "{{ hitrye_path }}/config.php"
 
 - name: Chmod user directories
   file:
-    path: /var/www/hitrye/{{ item }}
+    path: "{{ hitrye_path }}/{{ item }}"
     mode: 0777
     state: directory
   with_items:
@@ -82,16 +120,24 @@
     - images/avatars/upload
 
 - name: Delete install directory
+  when: not phpbbf.stat.exists
   file:
-    path: /var/www/hitrye/install
+    path: "{{ hitrye_path }}/install"
     state: absent
 
 - name: Copy old smilies
   copy:
     src: "{{ item }}"
-    dest: /var/www/hitrye/images/smilies/{{ item }}
+    dest: "{{ hitrye_path }}/images/smilies/{{ item }}"
   with_items:
     - icon_e_biggrin.gif
     - icon_e_sad.gif
     - icon_e_smile.gif
     - icon_e_wink.gif
+
+- name: Write installed version
+  become: yes
+  copy:
+    content: "{{ phpbb.version }}"
+    dest: /opt/phpbb.version
+    force: yes
