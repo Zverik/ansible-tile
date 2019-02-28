@@ -17,7 +17,6 @@
     - firewall
     - postgis
     - python3
-    - icecast
 
 - hosts: all
   remote_user: zverik
