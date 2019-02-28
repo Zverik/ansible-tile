@@ -67,12 +67,12 @@
   args:
     creates: "{{ hitrye_path }}/index.php"
 
-- name: Find old phpbb files to remove
+- name: Find phpbb files to update
   when:
     - phpbbf.stat.exists
     - phpbb_server_version != phpbb.version
   find:
-    path: "{{ hitrye_path }}"
+    path: /var/tmp/phpBB3
     file_type: any
     recurse: no
     excludes:
@@ -81,17 +81,14 @@
       - files
   register: hitrye_files
 
-- name: Remove old phpbb files
+- name: Update phpbb files
   when: hitrye_files.files is defined
-  file:
-    path: "{{ item.path }}"
-    state: absent
+  shell: cp -r "{{ item.path }}" {{ hitrye_path }}/
   with_items: "{{ hitrye_files.files }}"
 
 - name: Copy language to phpbb installation
+  when: phpbb_server_version != phpbb.version
   shell: "cp -r /var/tmp/{{ phpbb_lang.dir }}/* {{ hitrye_path }}/"
-  args:
-    creates: "{{ hitrye_path }}/language/ru/common.php"
 
 - name: Delete phpbb.zip
   file:
@@ -119,10 +116,19 @@
     - files 
     - images/avatars/upload
 
+- name: Upgrade the database
+  when:
+    - phpbbf.stat.exists
+    - phpbb_server_version != phpbb.version
+  shell: php bin/phpbbcli.php --safe-mode db:migrate
+  args:
+    chdir: "{{ hitrye_path }}"
+
 - name: Delete install directory
-  when: not phpbbf.stat.exists
   file:
-    path: "{{ hitrye_path }}/install"
+    paths:
+      - "{{ hitrye_path }}/install"
+      - "{{ hitrye_path }}/cache/production"
     state: absent
 
 - name: Copy old smilies
