@@ -22,3 +22,23 @@
           Require all granted
       </Directory>
   notify: reload apache
+
+- name: Initialize log file
+  become: yes
+  copy:
+    content: ""
+    dest: /var/log/podcast_duration.log
+    force: no
+    owner: zverik
+    mode: 0644
+
+- name: Permissions for uploading the data file
+  file:
+    path: /opt/src/podcast_duration
+    state: directory
+    mode: 0777
+
+- name: Set up crontab for the updated
+  cron:
+    name: podcast_updater
+    job: /opt/src/podcast_duration/poll_update.sh 2>> /var/log/podcast_duration.log
