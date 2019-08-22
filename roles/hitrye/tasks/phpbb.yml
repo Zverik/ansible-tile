@@ -126,9 +126,16 @@
 
 - name: Delete install directory
   file:
-    paths:
-      - "{{ hitrye_path }}/install"
-      - "{{ hitrye_path }}/cache/production"
+    path: "{{ hitrye_path }}/install"
+    state: absent
+
+- name: Clear cache
+  when:
+    - phpbbf.stat.exists
+    - phpbb_server_version != phpbb.version
+  become: yes
+  file:
+    path: "{{ hitrye_path }}/cache/production"
     state: absent
 
 - name: Copy old smilies

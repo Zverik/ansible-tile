@@ -1,0 +1,13 @@
+---
+- name: Upload apache config
+  copy:
+    src: sotm.conf
+    dest: /etc/apache2/sites-available
+  notify: reload apache
+
+- name: Symlink apache config
+  file:
+    src: /etc/apache2/sites-available/sotm.conf
+    dest: /etc/apache2/sites-enabled/sotm.conf
+    state: link
+  notify: reload apache

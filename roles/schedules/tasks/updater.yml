@@ -1,0 +1,46 @@
+---
+- name: Upload updating script
+  copy:
+    src: update_schedules.sh
+    dest: /opt/src/update_schedules.sh
+    mode: 0755
+  register: updater_changed
+  tags: sotm
+
+- name: Initialize log file
+  become: yes
+  copy:
+    content: ""
+    dest: /var/log/sotm_schedules.log
+    force: no
+    owner: zverik
+    mode: 0644
+
+- name: Create schedules data directory
+  file:
+    path: /opt/src/sotm_schedules
+    state: directory
+
+- name: Upload data files for the schedules
+  copy:
+    src: "{{ item }}"
+    dest: /opt/src/sotm_schedules
+  with_fileglob:
+    - "*.ini"
+  tags: sotm
+
+- name: Set up crontab for the updated
+  cron:
+    name: sotm_schedules
+    minute: "5"
+    hour: "4"
+    job: /opt/src/update_schedules.sh 2> /var/log/sotm_schedules.log
+  tags: sotm
+
+- name: Update schedules
+  when: git_updated.changed or updater_changed.changed
+  command: /bin/bash /opt/src/update_schedules.sh
+
+- name: Update schedules unconditionally
+  command: /bin/bash /opt/src/update_schedules.sh
+  tags: [never, sotm]
