@@ -11,10 +11,14 @@
 
 - name: Create virtualenv
   pip:
-    name: vobject
+    name:
+      - vobject
+      - qrcode[pil]
+      - /opt/src/schedule-convert
     virtualenv: /opt/src/sc_venv
     virtualenv_python: python3.5
     virtualenv_site_packages: yes
+  tags: sotm
 
 - name: Create www/sotm directory
   become: yes
@@ -25,11 +29,8 @@
 
 - name: Upload static files to www
   copy:
-    src: "{{ item }}"
+    src: index.html
     dest: /var/www/sotm/
-  with_fileglob:
-    - index.html
-    - "*.png"
   tags: sotm
 
 - name: Set up schedule updater
