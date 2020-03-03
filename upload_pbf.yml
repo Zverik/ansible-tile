@@ -38,7 +38,8 @@
 
     - name: Get timestamp of the last change in the file
       when: state is not defined
-      command: osmium fileinfo -e -g data.timestamp.last "{{ planet }}"
+      local_action: command osmium fileinfo -e -g data.timestamp.last "{{ pbf }}"
+      # command: osmium fileinfo -e -g data.timestamp.last "{{ planet }}"
       register: lastdate
       changed_when: False
 
