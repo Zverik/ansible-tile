@@ -6,6 +6,8 @@
   with_items:
     - nik4wsgi
     - Nik4
+  notify: touch nik4
+  tags: nik4
 
 - name: Upload nik4wsgi config
   copy:

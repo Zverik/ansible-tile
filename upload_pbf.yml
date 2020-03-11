@@ -12,6 +12,7 @@
     style: '/opt/styles/veloroad/veloroad.style'
     planet: /var/tmp/planet.osm.pbf
     render_user: osm
+    ansible_async_dir: /tmp/ansible_async
   tasks:
     - name: Upload pbf
       copy:
@@ -46,12 +47,11 @@
     - name: Import pbf
       become_user: "{{ render_user }}"
       become: yes
-      command: osm2pgsql -C {{ ansible_memtotal_mb - 100 }} --slim -S "{{ style }}" -d {{ gisdb }} --number-processes 2 "{{ planet }}"
-      async: 7200
+      command: osm2pgsql -C {{ ansible_memfree_mb - 100 }} --slim -S "{{ style }}" -d {{ gisdb }} --number-processes 2 "{{ planet }}"
+      async: 9000
       poll: 0
       register: osm2pgsql_job
-      environment:
-        ANSIBLE_ASYNC_DIR: /tmp/ansible_async
+      tags: osm2pgsql
 
     - name: Wait for osm2pgsql to finish
       become_user: "{{ render_user }}"
@@ -62,8 +62,7 @@
       until: osm2pgsql_status.finished
       retries: 300
       delay: 30
-      environment:
-        ANSIBLE_ASYNC_DIR: /tmp/ansible_async
+      tags: osm2pgsql
 
     - name: Remove pbf
       file:
@@ -81,12 +80,13 @@
 
     - name: Download relevant state
       when: state is not defined
-      become_user: "{{ render_user }}"
       become: yes
       get_url:
         url: "https://replicate-sequences.osm.mazdermind.de/?{{ lastdate.stdout }}"
         dest: /var/lib/mod_tile/.osmosis/state.txt
         force: yes
+        owner: "{{ render_user }}"
+        group: "{{ render_user }}"
 
     - name: Update bounds for trim_osc
       when: bounds is defined
@@ -107,6 +107,38 @@
         dest: /opt/src/nik4wsgi/www/static/bounds.geojson
         force: yes
     
+    - name: Delete old tiles from veloroad
+      become: yes
+      file:
+        state: absent
+        path: "/var/lib/mod_tile/veloroad/{{ item }}"
+      loop:
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+
+    - name: Delete old tiles from veloroadhr
+      become: yes
+      file:
+        state: absent
+        path: "/var/lib/mod_tile/veloroadhr/{{ item }}"
+      loop:
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+
     - name: Start db updates
       become: yes
       become_user: "{{ render_user }}"
