@@ -10,7 +10,7 @@
   become: yes
   remote_user: root
   roles:
-    - role: tersmitten.swapfile
+    - role: oefenweb.swapfile
       swapfile_size: 1000M
     - geerlingguy.ntp
     - apache
