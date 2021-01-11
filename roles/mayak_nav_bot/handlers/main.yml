@@ -1,0 +1,4 @@
+---
+- name: restart mayak_nav
+  become: yes
+  systemd: name=mayak_nav_bot state=restarted

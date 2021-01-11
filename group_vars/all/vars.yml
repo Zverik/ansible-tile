@@ -23,6 +23,9 @@ facebook_auth_secret: "{{ v_facebook_auth_secret }}"
 mapsme_auth_id: "{{ v_mapsme_auth_id }}"
 mapsme_auth_secret: "{{ v_mapsme_auth_secret }}"
 
+mayak_nav_admin_id: "{{v_mayak_nav_admin_id}}"
+mayak_nav_telegram_token: "{{ v_mayak_nav_telegram_token }}"
+
 borg_repo: "{{ v_borg_repo }}"
 borg_pass: "{{ v_borg_pass }}"
 borg_key: "{{ v_borg_key }}"

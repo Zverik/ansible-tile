@@ -1,0 +1,87 @@
+---
+- name: Check out na_rayone code
+  git:
+    repo: https://github.com/Zverik/bot_na_rayone.git
+    dest: /opt/src/mayak_nav
+  notify: restart mayak_nav
+  tags: mayak_nav
+
+- name: Install repo for python 3.9
+  become: yes
+  apt_repository:
+    repo: 'ppa:deadsnakes/ppa'
+    state: present
+  tags: mayak_nav
+
+- name: Install python 3.9
+  become: yes
+  apt:
+    pkg:
+      - python3.9
+      - python3.9-venv
+      - python3.9-dev
+    state: present
+    update_cache: yes
+  tags: mayak_nav
+
+- name: Create virtualenv for na_rayone
+  pip:
+    requirements: /opt/src/mayak_nav/requirements.txt
+    virtualenv: /opt/src/mayak_nav/venv
+    virtualenv_python: python3.9
+  tags: mayak_nav
+
+- name: Install the rest of the dependencies
+  pip:
+    requirements: /opt/src/mayak_nav/requirements2.txt
+    virtualenv: /opt/src/mayak_nav/venv
+    virtualenv_python: python3.9
+  tags: mayak_nav
+
+- name: Make log directory
+  become: yes
+  file:
+    path: /var/log/mayak_nav_bot
+    state: directory
+    owner: zverik
+    group: zverik
+  tags: mayak_nav
+
+- name: Upload mayak_nav config
+  template:
+    src: config.yml
+    dest: /opt/src/mayak_nav/config/config.yml
+  notify: restart mayak_nav
+  tags: mayak_nav
+
+- name: Upload responses yml
+  copy:
+    src: responses.yml
+    dest: /opt/src/mayak_nav/config/responses.yml
+  notify: restart mayak_nav
+  tags: mayak_nav
+
+- name: Decrypt addr yml
+  copy:
+    src: addr.yml
+    dest: /opt/src/mayak_nav/config/addr.yml
+  notify: restart mayak_nav
+  tags: mayak_nav
+
+# TODO: map tiles - ?
+# TODO: backup sqlite and photos
+
+- name: Create systemd service
+  become: yes
+  copy:
+    src: mayak_nav_bot.service
+    dest: /etc/systemd/system/
+  notify: restart mayak_nav
+  tags: mayak_nav
+
+- name: Enable mayak systemd module
+  become: yes
+  systemd:
+    name: mayak_nav_bot
+    enabled: yes
+  tags: mayak_nav

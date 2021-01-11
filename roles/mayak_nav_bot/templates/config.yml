@@ -1,0 +1,5 @@
+---
+telegram_token: '{{ mayak_nav_telegram_token }}'
+admin_id: {{ mayak_nav_admin_id }}
+logs: /var/log/mayak_nav_bot
+maintenance: false
