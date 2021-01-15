@@ -4,7 +4,7 @@
     repo: https://github.com/Zverik/bot_na_rayone.git
     dest: /opt/src/mayak_nav
   notify: restart mayak_nav
-  tags: [mayak_nav, update]
+  tags: [mayak_nav, mayak_update]
 
 - name: Install repo for python 3.9
   become: yes
@@ -52,24 +52,35 @@
     src: config.yml
     dest: /opt/src/mayak_nav/config/config.yml
   notify: restart mayak_nav
-  tags: [mayak_nav, update]
+  tags: [mayak_nav, mayak_update]
 
 - name: Upload responses yml
   copy:
     src: responses.yml
     dest: /opt/src/mayak_nav/config/responses.yml
   notify: restart mayak_nav
-  tags: [mayak_nav, update]
+  tags: [mayak_nav, mayak_update]
 
 - name: Decrypt addr yml
   copy:
     src: addr.yml
     dest: /opt/src/mayak_nav/config/addr.yml
   notify: restart mayak_nav
-  tags: [mayak_nav, update]
+  tags: [mayak_nav, mayak_update]
 
-# TODO: map tiles - ?
-# TODO: backup sqlite and photos
+- name: Create empty photo directory
+  file:
+    path: /opt/src/mayak_nav/photo
+    state: directory
+  tags: mayak_nav
+
+- name: Upload tiles
+  unarchive:
+    src: tiles.tar
+    dest: /opt/src/mayak_nav
+    owner: zverik
+    group: zverik
+  tags: mayak_nav
 
 - name: Create systemd service
   become: yes
@@ -84,4 +95,12 @@
   systemd:
     name: mayak_nav_bot
     enabled: yes
+  tags: mayak_nav
+
+- name: Install backup script for mayak
+  become: yes
+  template:
+    src: backup_mayak.j2
+    dest: /etc/cron.daily/backup_mayak
+    mode: 0700
   tags: mayak_nav
