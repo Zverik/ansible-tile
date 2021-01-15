@@ -4,7 +4,7 @@
     repo: https://github.com/Zverik/bot_na_rayone.git
     dest: /opt/src/mayak_nav
   notify: restart mayak_nav
-  tags: mayak_nav
+  tags: [mayak_nav, update]
 
 - name: Install repo for python 3.9
   become: yes
@@ -52,21 +52,21 @@
     src: config.yml
     dest: /opt/src/mayak_nav/config/config.yml
   notify: restart mayak_nav
-  tags: mayak_nav
+  tags: [mayak_nav, update]
 
 - name: Upload responses yml
   copy:
     src: responses.yml
     dest: /opt/src/mayak_nav/config/responses.yml
   notify: restart mayak_nav
-  tags: mayak_nav
+  tags: [mayak_nav, update]
 
 - name: Decrypt addr yml
   copy:
     src: addr.yml
     dest: /opt/src/mayak_nav/config/addr.yml
   notify: restart mayak_nav
-  tags: mayak_nav
+  tags: [mayak_nav, update]
 
 # TODO: map tiles - ?
 # TODO: backup sqlite and photos
