@@ -1,0 +1,4 @@
+---
+- name: restart mark_spam
+  become: yes
+  systemd: name=mark_spam_bot state=restarted

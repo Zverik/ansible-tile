@@ -31,13 +31,6 @@
     virtualenv_python: python3.9
   tags: mayak_nav
 
-- name: Install the rest of the dependencies
-  pip:
-    requirements: /opt/src/mayak_nav/requirements2.txt
-    virtualenv: /opt/src/mayak_nav/venv
-    virtualenv_python: python3.9
-  tags: mayak_nav
-
 - name: Make log directory
   become: yes
   file:
