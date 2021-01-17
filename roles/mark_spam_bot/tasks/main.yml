@@ -11,7 +11,6 @@
   apt_repository:
     repo: 'ppa:deadsnakes/ppa'
     state: present
-  tags: mark_spam
 
 - name: Install python 3.9
   become: yes
@@ -22,7 +21,6 @@
       - python3.9-dev
     state: present
     update_cache: yes
-  tags: mark_spam
 
 - name: Create virtualenv for mark_spam
   pip:
