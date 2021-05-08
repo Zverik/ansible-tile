@@ -4,6 +4,7 @@
     src: sotm.conf
     dest: /etc/apache2/sites-available
   notify: reload apache
+  tags: sotm
 
 - name: Symlink apache config
   file:

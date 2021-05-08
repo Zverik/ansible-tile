@@ -1,0 +1,104 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    acme_challenge_type: http-01
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    acme_version: 2
+    base_domains:
+      - sotm.osmz.ru
+      - teleput.textual.ru
+    domains: []
+    http_roots:
+      "sotm.osmz.ru": /var/www/sotm
+      "teleput.textual.ru": /var/www/teleput
+  tasks:
+    - name: Test certificate ages
+      stat:
+        path: "/etc/letsencrypt/certs/fullchain_{{ item }}.crt"
+      loop: "{{ base_domains }}"
+      register: cert_ages
+
+    - name: Make a list of certificates more than 45 days old
+      when: "not cert_ages.results[item_idx].stat.exists or cert_ages.results[item_idx].stat.mtime < ansible_date_time.epoch|int - 45*24*3600"
+      set_fact:
+        domains: "{{ domains + [item] }}"
+      loop: "{{ base_domains }}"
+      loop_control:
+        index_var: item_idx
+
+    - name: Create letsencrypt directories
+      file:
+        path: "/etc/letsencrypt/{{ item }}"
+        state: directory
+        mode: u=rwx,g=x,o=x
+      with_items:
+        - keys
+        - csrs
+        - certs
+
+    - name: Create wwwroot directories, just in case
+      file:
+        path: "{{ http_roots[item] }}"
+        state: directory
+        owner: zverik
+      loop: "{{ domains }}"
+
+    - name: Generate private keys
+      shell: "openssl genrsa 4096 > /etc/letsencrypt/keys/{{ item }}.key"
+      loop: "{{ domains }}"
+
+    - name: Generate CSRs
+      shell: "openssl req -new -sha256 -key /etc/letsencrypt/keys/{{ item }}.key -subj \"/CN={{ item }}\" > /etc/letsencrypt/csrs/{{ item }}.csr"
+      loop: "{{ domains }}"
+
+    - name: Let's Encrypt challenge for sotm.osmz.ru
+      acme_certificate:
+        acme_directory: "{{ acme_directory }}"
+        acme_version: "{{ acme_version }}"
+        account_key_content: "{{ letsencrypt_account_key }}"
+        account_email: "{{ admin_email }}"
+        terms_agreed: 1
+        challenge: http-01
+        csr: "/etc/letsencrypt/csrs/{{ item }}.csr"
+        dest: "/etc/letsencrypt/certs/{{ item }}.crt"
+        fullchain_dest: "/etc/letsencrypt/certs/fullchain_{{ item }}.crt"
+      loop: "{{ domains }}"
+      # Results are registered into acme_challenge_domains.results[0], [1], etc
+      register: acme_challenge_domains
+
+    - name: Create .well-known directories
+      file:
+        path: "{{ http_roots[item] }}/.well-known/acme-challenge"
+        state: directory
+      loop: "{{ domains }}"
+
+    - name: Implement http-01 challenge files
+      copy:
+        content: "{{ acme_challenge_domains.results[item_idx]['challenge_data'][item]['http-01']['resource_value'] }}"
+        dest: "{{ http_roots[item] }}/{{ acme_challenge_domains.results[item_idx]['challenge_data'][item]['http-01']['resource'] }}"
+      loop: "{{ domains }}"
+      loop_control:
+        index_var: item_idx
+
+    - name: Complete Let's Encrypt challenges
+      acme_certificate:
+        acme_directory: "{{ acme_directory }}"
+        acme_version: "{{ acme_version }}"
+        account_key_content: "{{ letsencrypt_account_key }}"
+        account_email: "{{ admin_email }}"
+        challenge: http-01
+        csr: "/etc/letsencrypt/csrs/{{ item }}.csr"
+        dest: "/etc/letsencrypt/certs/{{ item }}.crt"
+        chain_dest: "/etc/letsencrypt/certs/chain_{{ item }}.crt"
+        fullchain_dest: "/etc/letsencrypt/certs/fullchain_{{ item }}.crt"
+        data: "{{ acme_challenge_domains.results[item_idx] }}"
+      loop: "{{ domains }}"
+      loop_control:
+        index_var: item_idx
+
+    - name: Delete .well-known directories
+      file:
+        path: "{{ http_roots[item] }}/.well-known/acme-challenge"
+        state: absent
+      loop: "{{ domains }}"

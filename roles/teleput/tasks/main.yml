@@ -1,0 +1,108 @@
+---
+- name: Check out teleput code
+  git:
+    repo: https://github.com/Zverik/teleput-server.git
+    dest: /opt/src/teleput
+  notify: restart teleput
+  tags: teleput
+
+- name: Install repo for python 3.9
+  become: yes
+  apt_repository:
+    repo: 'ppa:deadsnakes/ppa'
+    state: present
+
+- name: Install python 3.9
+  become: yes
+  apt:
+    pkg:
+      - python3.9
+      - python3.9-venv
+      - python3.9-dev
+    state: present
+    update_cache: yes
+
+- name: Create virtualenv for teleput
+  pip:
+    requirements: /opt/src/teleput/requirements.txt
+    virtualenv: /opt/src/teleput/venv
+    virtualenv_python: python3.9
+  tags: teleput
+
+- name: Upload teleput config
+  template:
+    src: config_local.j2
+    dest: /opt/src/teleput/config_local.py
+  notify: restart teleput
+  tags: teleput
+
+- name: Create teleput systemd service
+  become: yes
+  copy:
+    src: teleput.service
+    dest: /etc/systemd/system/
+  notify: restart teleput
+  tags: teleput
+
+- name: Enable teleput systemd module
+  become: yes
+  systemd:
+    name: teleput
+    enabled: yes
+  tags: teleput
+
+- name: Ensure http_proxy is enabled
+  become: yes
+  apache2_module:
+    name: proxy_http
+    state: present
+  tags: teleput
+
+- name: Check that certificates exist
+  stat:
+    path: /etc/letsencrypt/certs/fullchain_teleput.textual.ru.crt
+  register: cert_file
+  tags: teleput
+
+- name: Upload teleput apache config
+  when: cert_file.stat.exists
+  become: yes
+  copy:
+    src: teleput.conf
+    dest: /etc/apache2/sites-available/teleput.conf
+  notify: reload apache
+  tags: teleput
+
+- name: Upload teleput-nossl apache config
+  when: not cert_file.stat.exists
+  become: yes
+  copy:
+    src: teleput.conf
+    dest: /etc/apache2/sites-available/teleput.conf
+  notify: reload apache
+  tags: teleput
+
+- name: Create teleput document root
+  become: yes
+  file:
+    path: /var/www/teleput
+    state: directory
+    owner: zverik
+  tags: teleput
+
+- name: Enable teleput config if not yet
+  become: yes
+  file:
+    src: /etc/apache2/sites-available/teleput.conf
+    path: /etc/apache2/sites-enabled/teleput.conf
+    state: link
+  notify: reload apache
+  tags: teleput
+
+- name: Install backup script for teleput
+  become: yes
+  template:
+    src: backup_teleput.j2
+    dest: /etc/cron.daily/backup_teleput
+    mode: 0700
+  tags: teleput

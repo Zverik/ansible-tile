@@ -1,0 +1,4 @@
+---
+- name: restart teleput
+  become: yes
+  systemd: name=teleput state=restarted

@@ -1,0 +1,17 @@
+[Unit]
+Description=Teleput Telegram Bot
+After=syslog.target
+
+[Service]
+Type=simple
+Restart=always
+User=zverik
+Group=zverik
+WorkingDirectory=/opt/src/teleput
+ExecStart=/opt/src/teleput/venv/bin/python teleput.py
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
