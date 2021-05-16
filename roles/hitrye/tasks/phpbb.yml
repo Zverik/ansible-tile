@@ -28,7 +28,7 @@
 - name: Download phpbb
   when: phpbb_server_version != phpbb.version
   get_url:
-    url: https://www.phpbb.com/files/release/phpBB-{{ phpbb.version }}.zip
+    url: "{{ phpbb.url }}"
     dest: /var/tmp/phpbb.zip
     checksum: "{{ phpbb.checksum }}"
 

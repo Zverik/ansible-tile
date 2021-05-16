@@ -5,13 +5,15 @@
     acme_challenge_type: http-01
     acme_directory: https://acme-v02.api.letsencrypt.org/directory
     acme_version: 2
+    domains: []
     base_domains:
       - sotm.osmz.ru
       - teleput.textual.ru
-    domains: []
+      - hitrye.ru
     http_roots:
       "sotm.osmz.ru": /var/www/sotm
       "teleput.textual.ru": /var/www/teleput
+      "hitrye.ru": /var/www/hitrye
   tasks:
     - name: Test certificate ages
       stat:
@@ -52,7 +54,7 @@
       shell: "openssl req -new -sha256 -key /etc/letsencrypt/keys/{{ item }}.key -subj \"/CN={{ item }}\" > /etc/letsencrypt/csrs/{{ item }}.csr"
       loop: "{{ domains }}"
 
-    - name: Let's Encrypt challenge for sotm.osmz.ru
+    - name: Let's Encrypt challenge
       acme_certificate:
         acme_directory: "{{ acme_directory }}"
         acme_version: "{{ acme_version }}"

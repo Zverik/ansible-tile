@@ -7,9 +7,9 @@
 - name: Download Recent Topics extension
   when: not rt.stat.exists
   get_url:
-    url: https://www.phpbb.com/customise/db/download/154391
+    url: https://www.phpbb.com/customise/db/download/180056
     dest: /var/tmp/recent.zip
-    checksum: md5:f6033fc793bcbd0197d9597464e21cda
+    checksum: md5:21d1bf2cee0e0085a55b032d0f1526cd
 
 - name: Unpack recent topics
   when: not rt.stat.exists

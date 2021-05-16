@@ -34,3 +34,4 @@ borg_key: "{{ v_borg_key }}"
 letsencrypt_account_key: "{{ v_letsencrypt_account_key }}"
 
 teleput_telegram_token: "{{ v_teleput_telegram_token }}"
+teleput_path: "{{ v_teleput_path }}"

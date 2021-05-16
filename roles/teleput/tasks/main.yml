@@ -4,7 +4,7 @@
     repo: https://github.com/Zverik/teleput-server.git
     dest: /opt/src/teleput
   notify: restart teleput
-  tags: teleput
+  tags: [teleput, update-teleput]
 
 - name: Install repo for python 3.9
   become: yes
@@ -27,14 +27,14 @@
     requirements: /opt/src/teleput/requirements.txt
     virtualenv: /opt/src/teleput/venv
     virtualenv_python: python3.9
-  tags: teleput
+  tags: [teleput, update-teleput]
 
 - name: Upload teleput config
   template:
     src: config_local.j2
     dest: /opt/src/teleput/config_local.py
   notify: restart teleput
-  tags: teleput
+  tags: [teleput, update-teleput]
 
 - name: Create teleput systemd service
   become: yes
@@ -67,16 +67,7 @@
 - name: Upload teleput apache config
   when: cert_file.stat.exists
   become: yes
-  copy:
-    src: teleput.conf
-    dest: /etc/apache2/sites-available/teleput.conf
-  notify: reload apache
-  tags: teleput
-
-- name: Upload teleput-nossl apache config
-  when: not cert_file.stat.exists
-  become: yes
-  copy:
+  template:
     src: teleput.conf
     dest: /etc/apache2/sites-available/teleput.conf
   notify: reload apache

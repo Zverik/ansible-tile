@@ -1,6 +1,11 @@
 ---
+- name: Check that certificates exist
+  stat:
+    path: /etc/letsencrypt/certs/fullchain_hitrye.ru.crt
+  register: cert_file
+
 - name: Upload apache config
-  copy:
+  template:
     src: hitrye.conf
     dest: /etc/apache2/sites-available
   notify: reload apache
@@ -9,6 +14,11 @@
   file:
     path: /var/log/apache2/hitrye
     state: directory
+
+- name: Upload logrotate config
+  copy:
+    src: logrotate.conf
+    dest: /etc/logrotate.d/apache2-hitrye
 
 - name: Symlink apache config
   file:
