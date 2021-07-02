@@ -5,7 +5,7 @@ WWW=/var/www/sotm
 HERE="$(cd "$(dirname "$0")"; pwd)"
 DATA="$HERE/sotm_schedules"
 VENV="$HERE/sc_venv"
-BASEURL="http://sotm.osmz.ru"
+BASEURL="https://sotm.osmz.ru"
 
 mkdir -p "$DATA"
 wget -q -r -O "$DATA/sotm2021.xml" "https://pretalx.com/sotm2021/schedule/export/schedule.xml"
