@@ -21,8 +21,8 @@
       loop: "{{ base_domains }}"
       register: cert_ages
 
-    - name: Make a list of certificates more than 45 days old
-      when: "not cert_ages.results[item_idx].stat.exists or cert_ages.results[item_idx].stat.mtime < ansible_date_time.epoch|int - 45*24*3600"
+    - name: Make a list of certificates more than 70 days old
+      when: "not cert_ages.results[item_idx].stat.exists or cert_ages.results[item_idx].stat.mtime < ansible_date_time.epoch|int - 70*24*3600"
       set_fact:
         domains: "{{ domains + [item] }}"
       loop: "{{ base_domains }}"
@@ -47,7 +47,9 @@
       loop: "{{ domains }}"
 
     - name: Generate private keys
-      shell: "openssl genrsa 4096 > /etc/letsencrypt/keys/{{ item }}.key"
+      shell:
+        cmd: "openssl genrsa 4096 > /etc/letsencrypt/keys/{{ item }}.key"
+        creates: /etc/letsencrypt/keys/{{ item }}.key
       loop: "{{ domains }}"
 
     - name: Generate CSRs
@@ -65,6 +67,7 @@
         csr: "/etc/letsencrypt/csrs/{{ item }}.csr"
         dest: "/etc/letsencrypt/certs/{{ item }}.crt"
         fullchain_dest: "/etc/letsencrypt/certs/fullchain_{{ item }}.crt"
+        force: yes
       loop: "{{ domains }}"
       # Results are registered into acme_challenge_domains.results[0], [1], etc
       register: acme_challenge_domains
@@ -95,6 +98,7 @@
         chain_dest: "/etc/letsencrypt/certs/chain_{{ item }}.crt"
         fullchain_dest: "/etc/letsencrypt/certs/fullchain_{{ item }}.crt"
         data: "{{ acme_challenge_domains.results[item_idx] }}"
+        force: yes
       loop: "{{ domains }}"
       loop_control:
         index_var: item_idx
