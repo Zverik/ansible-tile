@@ -9,8 +9,8 @@ export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
 systemctl stop mayak_nav_bot
 
 $BORG create --compression zstd,5 ::'Mayak_{now:%Y-%m-%d_%H%M}' \
-  /opt/src/mayak_nav/photo \
-  /opt/src/mayak_nav/raybot.sqlite
+  /opt/src/mayak_nav/config/photo \
+  /opt/src/mayak_nav/config/raybot.sqlite
 
 $BORG prune --prefix 'Mayak_' --keep-daily=7 --keep-weekly=2 --keep-monthly=3
 

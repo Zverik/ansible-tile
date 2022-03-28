@@ -108,3 +108,8 @@
         path: "{{ http_roots[item] }}/.well-known/acme-challenge"
         state: absent
       loop: "{{ domains }}"
+
+    - name: Reload apache2 configuration
+      systemd:
+        name: apache2
+        state: reloaded

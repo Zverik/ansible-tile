@@ -1,0 +1,29 @@
+---
+- name: Checkout osm-counter repo
+  git:
+    repo: https://github.com/Zverik/osm-changes-counter.git
+    dest: /opt/src/osm-changes-counter
+  tags: changes
+
+- name: Create virtualenv
+  pip:
+    state: latest
+    requirements: /opt/src/osm-changes-counter/requirements.txt
+    virtualenv: /opt/src/osm-changes-counter/venv
+    virtualenv_python: python3.9
+  tags: changes
+
+- name: Initialize osm-counter log file
+  become: yes
+  copy:
+    content: ""
+    dest: /var/log/osm_counter.log
+    force: no
+    owner: zverik
+    mode: 0644
+
+#- name: Add osm-counter to crontab
+#  cron:
+#    name: osm_counter
+#    job: "run-one /opt/src/osm-changes-counter/run.sh gis /opt/src/osm-changes-counter/cities.csv > /var/log/osm_counter.log"
+#    minute: "3,33"

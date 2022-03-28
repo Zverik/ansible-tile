@@ -63,14 +63,14 @@
 
 - name: Create empty photo directory
   file:
-    path: /opt/src/mayak_nav/photo
+    path: /opt/src/mayak_nav/config/photo
     state: directory
   tags: mayak_nav
 
 - name: Upload tiles
   unarchive:
     src: tiles.tar
-    dest: /opt/src/mayak_nav
+    dest: /opt/src/mayak_nav/config
     owner: zverik
     group: zverik
   tags: mayak_nav
