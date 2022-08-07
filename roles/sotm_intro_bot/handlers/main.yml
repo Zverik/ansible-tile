@@ -1,0 +1,4 @@
+---
+- name: restart sotm_intro_bot
+  become: yes
+  systemd: name=sotm_intro_bot state=restarted

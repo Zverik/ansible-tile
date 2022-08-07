@@ -1,0 +1,62 @@
+---
+- name: Check out sotm_intro_bot code
+  git:
+    repo: https://github.com/Zverik/sotm_intro_bot.git
+    dest: /opt/src/sotm_intro_bot
+  notify: restart sotm_intro_bot
+  tags: sotm_intro_bot
+
+- name: Install repo for python 3.9
+  become: yes
+  apt_repository:
+    repo: 'ppa:deadsnakes/ppa'
+    state: present
+  tags: sotm_intro_bot
+
+- name: Install python 3.9
+  become: yes
+  apt:
+    pkg:
+      - python3.9
+      - python3.9-venv
+      - python3.9-dev
+    state: present
+    update_cache: yes
+  tags: sotm_intro_bot
+
+- name: Create virtualenv for sotm_intro_bot
+  pip:
+    requirements: /opt/src/sotm_intro_bot/requirements.txt
+    virtualenv: /opt/src/sotm_intro_bot/venv
+    virtualenv_python: python3.9
+  tags: sotm_intro_bot
+
+- name: Upload sotm_intro_bot config
+  template:
+    src: config.py
+    dest: /opt/src/sotm_intro_bot/config.py
+  notify: restart sotm_intro_bot
+  tags: sotm_intro_bot
+
+- name: Create systemd service
+  become: yes
+  copy:
+    src: sotm_intro_bot.service
+    dest: /etc/systemd/system/
+  notify: restart sotm_intro_bot
+  tags: sotm_intro_bot
+
+- name: Enable sotm_intro_bot systemd module
+  become: yes
+  systemd:
+    name: sotm_intro_bot
+    enabled: yes
+  tags: sotm_intro_bot
+
+- name: Install backup script for sotm_intro_bot
+  become: yes
+  template:
+    src: backup_intros.j2
+    dest: /etc/cron.daily/backup_intros
+    mode: 0700
+  tags: sotm_intro_bot

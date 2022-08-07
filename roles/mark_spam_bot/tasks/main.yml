@@ -1,5 +1,5 @@
 ---
-- name: Check out na_rayone code
+- name: Check out mark_spam code
   git:
     repo: https://github.com/Zverik/mark_spam_bot.git
     dest: /opt/src/mark_spam_bot
