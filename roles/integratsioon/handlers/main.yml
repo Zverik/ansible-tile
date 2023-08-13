@@ -1,0 +1,4 @@
+---
+- name: restart integratsioon
+  become: yes
+  systemd: name=integratsioon state=restarted
