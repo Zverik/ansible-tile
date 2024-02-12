@@ -1,0 +1,20 @@
+[Unit]
+Description=Geoscribble
+After=syslog.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User=zverik
+Group=zverik
+WorkingDirectory=/opt/src/geoscribble
+ExecStart=/opt/src/geoscribble/.venv/bin/uvicorn --port 3007 web.main:app
+Environment=PYTHONUNBUFFERED=1
+Environment=PGHOST=/var/run/postgresql
+Environment=PGUSER=zverik
+Environment=PGDATABASE=geoscribble
+StandardOutput=append:/var/log/geoscribble.log
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

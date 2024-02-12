@@ -16,7 +16,7 @@
     - apache
     - firewall
     - postgis
-    - python3
+    - { role: python3, tags: python }
 
 - hosts: all
   remote_user: zverik
@@ -30,10 +30,9 @@
     - a5a4
     - stats
     - hitrye
-    - podcast_lengths
     - schedules
     - mayak_nav_bot
     - mark_spam_bot
     - teleput
-    - changes_counter
     - integratsioon
+    - { role: geoscribble, tags: geoscribble }

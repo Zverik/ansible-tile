@@ -1,0 +1,4 @@
+---
+- name: restart geoscribble
+  become: yes
+  systemd: name=geoscribble state=restarted
