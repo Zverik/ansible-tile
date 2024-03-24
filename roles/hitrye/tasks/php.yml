@@ -1,16 +1,21 @@
 ---
-- name: Install php packages
+- name: Add repo for old PHP versions
+  apt_repository:
+    repo: 'ppa:ondrej/php'
+    state: present
+
+- name: Install php 7.4 packages
   apt:
     name:
-      - php
-      - php-gd
-      - php-imagick
-      - php-mbstring
-      - php-json
-      - php-pgsql
-      - php-xml
-      - php-zip
-      - libapache2-mod-php
+      - php7.4
+      - php7.4-gd
+      - php7.4-imagick
+      - php7.4-mbstring
+      - php7.4-json
+      - php7.4-pgsql
+      - php7.4-xml
+      - php7.4-zip
+      - libapache2-mod-php7.4
       - imagemagick
       - unzip
     state: present
