@@ -6,8 +6,8 @@ export BORG_PASSPHRASE='{{ borg_pass }}'
 export BORG_REMOTE_PATH=borg1
 export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
 
-DBDUMP=/var/tmp/geoscribble.sql
-pg_dump -U phpbb --format=c --file=$DBDUMP geoscribble
+DBDUMP=/var/tmp/geoscribble.pgc
+pg_dump -U zverik --format=c --file=$DBDUMP geoscribble
 
 $BORG create --compression zstd,5 ::'Geoscribble_{now:%Y-%m-%d_%H%M}' $DBDUMP
 

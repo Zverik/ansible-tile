@@ -1,6 +1,6 @@
 ---
 - name: Clone Topic Tags extension
   git:
-    repo: https://github.com/Zverik/phpbb-ext-topictags
+    repo: https://github.com/RobertHeim/phpbb-ext-topictags
     dest: /var/www/hitrye/ext/robertheim/topictags
     update: no

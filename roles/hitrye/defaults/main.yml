@@ -1,13 +1,13 @@
 ---
 hitrye_path: /var/www/hitrye
 phpbb:
-  url: https://download.phpbb.com/pub/release/3.2/3.2.11/phpBB-3.2.11.zip
-  version: 3.2.11
-  checksum: sha256:731b1deaf3965d515a217f9078b7d3050d73efab0e0d78d8a3c5f5bf0bebcc4e
+  url: https://download.phpbb.com/pub/release/3.3/3.3.11/phpBB-3.3.11.zip
+  version: 3.3.11
+  checksum: sha256:02006f09d71c44de55044497ef8633f95c6103361d175c816015280f3bcfe87b
 phpbb_lang:
-  url: https://www.phpbb.com/customise/db/download/181521
-  checksum: md5:7128130cec41b339b9f19f96eecdb9e4
-  dir: russian_2_0_8
+  url: https://www.phpbb.com/customise/db/download/203452
+  checksum: md5:aed0b10078a1f5a6f51619ea8b30cc5f
+  dir: russian_2_1_13
 
 borg_repo: 12345@ch-s001.rsync.net:backup
 borg_pass: 'hackme'

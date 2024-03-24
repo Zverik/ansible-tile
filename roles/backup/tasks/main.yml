@@ -16,3 +16,18 @@
   known_hosts:
     host: ch-s012.rsync.net
     key: "{{ rsync_key }}"
+
+- name: Add compacting job once a week
+  template:
+    src: compact_backups.j2
+    dest: /etc/cron.weekly/compact_backups
+    mode: 0700
+
+- name: Upload the extraction script
+  template:
+    src: extract_backup.j2
+    dest: /root/extract_backup
+    mode: 0700
+
+- name: Set up home backups
+  import_tasks: home.yml

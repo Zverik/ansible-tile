@@ -15,7 +15,7 @@
     - firewall
     - postgis
     - python3
-    - backup
+    - { role: backup, tags: backup }
 
 - hosts: all
   remote_user: zverik
@@ -25,10 +25,10 @@
     - get_veloroad
     - a5a4
     - stats
-    - hitrye
-    - schedules
-    - mayak_nav_bot
-    - mark_spam_bot
-    - teleput
-    - integratsioon
+    - { role: hitrye, tags: hitrye }
+    - { role: schedules, tags: schedules }
+    - { role: mayak_nav_bot, tags: mayak_nav_bot }
+    - { role: mark_spam_bot, tags: mark_spam_bot }
+    - { role: teleput, tags: teleput }
+    - { role: integratsioon, tags: integratsioon }
     - { role: geoscribble, tags: geoscribble }

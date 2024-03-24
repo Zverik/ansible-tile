@@ -4,20 +4,17 @@
     repo: https://github.com/Zverik/watch_integratsioon.git
     dest: /opt/src/watch_integratsioon
   notify: restart integratsioon
-  tags: integratsioon
 
 - name: Create virtualenv for watch_integratsioon
   pip:
     requirements: /opt/src/watch_integratsioon/requirements.txt
     virtualenv: /opt/src/watch_integratsioon/venv
-  tags: integratsioon
 
 - name: Upload watch_integratsioon config
   template:
     src: config.j2
     dest: /opt/src/watch_integratsioon/config.py
   notify: restart integratsioon
-  tags: integratsioon
 
 - name: Create systemd service
   become: yes
@@ -25,11 +22,13 @@
     src: integratsioon.service
     dest: /etc/systemd/system/
   notify: restart integratsioon
-  tags: integratsioon
 
 - name: Enable integratsioon systemd module
   become: yes
   systemd:
     name: integratsioon
     enabled: yes
-  tags: integratsioon
+
+- name: Set up backups
+  become: yes
+  import_tasks: backup.yml

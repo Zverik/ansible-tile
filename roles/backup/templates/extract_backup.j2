@@ -1,0 +1,19 @@
+#!/bin/bash
+set -u -e
+[ "$(whoami)" != "root" ] && echo "Please run this script as a root" && exit 1
+[ $# -lt 2 ] && echo "Usage: $0 <prefix> <path> ('*' for all)" && exit 1
+
+BORG=/usr/local/bin/borg
+export BORG_REPO={{ borg_repo }}
+export BORG_PASSPHRASE='{{ borg_pass }}'
+export BORG_REMOTE_PATH=borg1
+export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
+
+ARCHIVE=$($BORG list --short -P "$1" --last 1)
+[ -z "$ARCHIVE" ] && exit 0
+
+if [ "$2" == "*" ]; then
+  $BORG extract "::$ARCHIVE"
+else
+  $BORG extract "::$ARCHIVE" "$2"
+fi

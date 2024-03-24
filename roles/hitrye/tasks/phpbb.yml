@@ -79,6 +79,8 @@
       - config.php
       - images
       - files
+      - store
+      - ext
   register: hitrye_files
 
 - name: Update phpbb files

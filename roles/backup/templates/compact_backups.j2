@@ -1,0 +1,9 @@
+#!/bin/bash
+set -u -e
+BORG=/usr/local/bin/borg
+export BORG_REPO={{ borg_repo }}
+export BORG_PASSPHRASE='{{ borg_pass }}'
+export BORG_REMOTE_PATH=borg1
+export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
+
+$BORG compact

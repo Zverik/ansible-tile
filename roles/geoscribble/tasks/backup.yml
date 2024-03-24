@@ -1,0 +1,41 @@
+---
+- name: Install geoscribble backup script
+  template:
+    src: backup_geoscribble.j2
+    dest: /etc/cron.daily/backup_geoscribble
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Restore geoscribble database dump
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "Geoscribble_"
+      - var/tmp/geoscribble.pgc
+    chdir: /
+
+- name: Restore geoscribble database from the dump
+  when: restoring
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: geoscribble
+    state: restore
+    target: /var/tmp/geoscribble.pgc
+    target_opts: "--clean --if-exists"
+
+- name: Delete the temporary db dump
+  when: restoring
+  file:
+    path: /var/tmp/geoscribble.pgc
+    state: absent
+
+- name: Restart geoscribble service if we're restoring
+  when: restoring
+  service:
+    name: geoscribble
+    state: restarted

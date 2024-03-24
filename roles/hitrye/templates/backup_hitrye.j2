@@ -6,7 +6,7 @@ export BORG_PASSPHRASE='{{ borg_pass }}'
 export BORG_REMOTE_PATH=borg1
 export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
 
-DBDUMP=/var/tmp/hitrye.sql
+DBDUMP=/var/tmp/hitrye.pgc
 pg_dump -U phpbb --format=c --file=$DBDUMP hitrye
 
 $BORG create --compression zstd,5 ::'Hitrye_{now:%Y-%m-%d_%H%M}' \

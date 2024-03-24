@@ -33,6 +33,7 @@
       - jq
       - ncdu
       - vim
+      - sqlite3
     state: present
 
 - name: Create /opt/src directory

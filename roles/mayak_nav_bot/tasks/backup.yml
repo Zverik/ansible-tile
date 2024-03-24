@@ -1,0 +1,31 @@
+---
+- name: Install backup script for mayak
+  template:
+    src: backup_mayak.j2
+    dest: /etc/cron.daily/backup_mayak
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Stop mayak service if we're restoring
+  when: restoring
+  service:
+    name: mayak_nav_bot
+    state: stopped
+
+- name: Restore mayak database
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "Mayak_"
+      - opt/src/mayak_nav/config
+    chdir: /
+
+- name: Start mayak service if we're restoring
+  when: restoring
+  service:
+    name: mayak_nav_bot
+    state: started

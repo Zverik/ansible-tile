@@ -1,0 +1,31 @@
+---
+- name: Install backup script for integratsioon
+  template:
+    src: backup_integratsioon.j2
+    dest: /etc/cron.daily/backup_integratsioon
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Stop integratsioon service if we're restoring
+  when: restoring
+  service:
+    name: integratsioon
+    state: stopped
+
+- name: Restore integratsioon database
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "Integratsioon_"
+      - opt/src/watch_integratsioon/wi_users.sqlite
+    chdir: /
+
+- name: Start integratsioon service if we're restoring
+  when: restoring
+  service:
+    name: integratsioon
+    state: started

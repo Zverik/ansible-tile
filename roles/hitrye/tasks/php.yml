@@ -5,6 +5,7 @@
       - php
       - php-gd
       - php-imagick
+      - php-mbstring
       - php-json
       - php-pgsql
       - php-xml

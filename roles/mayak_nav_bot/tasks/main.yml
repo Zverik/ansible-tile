@@ -77,10 +77,6 @@
     enabled: yes
   tags: mayak_nav
 
-- name: Install backup script for mayak
+- name: Set up backups
   become: yes
-  template:
-    src: backup_mayak.j2
-    dest: /etc/cron.daily/backup_mayak
-    mode: 0700
-  tags: mayak_nav
+  import_tasks: backup.yml

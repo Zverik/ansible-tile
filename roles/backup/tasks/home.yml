@@ -1,0 +1,19 @@
+---
+- name: Upload the home backup script
+  template:
+    src: backup_files.j2
+    dest: /etc/cron.daily/backup_files
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Restore home
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "Tile_"
+      - '*'
+    chdir: /

@@ -4,20 +4,17 @@
     repo: https://github.com/Zverik/sotm_intro_bot.git
     dest: /opt/src/sotm_intro_bot
   notify: restart sotm_intro_bot
-  tags: sotm_intro_bot
 
 - name: Create virtualenv for sotm_intro_bot
   pip:
     requirements: /opt/src/sotm_intro_bot/requirements.txt
     virtualenv: /opt/src/sotm_intro_bot/venv
-  tags: sotm_intro_bot
 
 - name: Upload sotm_intro_bot config
   template:
     src: config.py
     dest: /opt/src/sotm_intro_bot/config.py
   notify: restart sotm_intro_bot
-  tags: sotm_intro_bot
 
 - name: Create systemd service
   become: yes
@@ -25,19 +22,13 @@
     src: sotm_intro_bot.service
     dest: /etc/systemd/system/
   notify: restart sotm_intro_bot
-  tags: sotm_intro_bot
 
 - name: Enable sotm_intro_bot systemd module
   become: yes
   systemd:
     name: sotm_intro_bot
     enabled: yes
-  tags: sotm_intro_bot
 
-- name: Install backup script for sotm_intro_bot
+- name: Set up backups
   become: yes
-  template:
-    src: backup_intros.j2
-    dest: /etc/cron.daily/backup_intros
-    mode: 0700
-  tags: sotm_intro_bot
+  import_tasks: backup.yml

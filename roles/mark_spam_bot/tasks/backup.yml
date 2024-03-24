@@ -1,0 +1,31 @@
+---
+- name: Install backup script for mark_spam
+  template:
+    src: backup_mark_spam.j2
+    dest: /etc/cron.daily/backup_mark_spam
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Stop mark_spam service if we're restoring
+  when: restoring
+  service:
+    name: mark_spam_bot
+    state: stopped
+
+- name: Restore mark_spam database
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "MarkSpam_"
+      - opt/src/mark_spam_bot/markspam.sqlite
+    chdir: /
+
+- name: Start mark_spam service if we're restoring
+  when: restoring
+  service:
+    name: mark_spam_bot
+    state: started

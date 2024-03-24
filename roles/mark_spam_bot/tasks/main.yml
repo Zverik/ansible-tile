@@ -4,20 +4,17 @@
     repo: https://github.com/Zverik/mark_spam_bot.git
     dest: /opt/src/mark_spam_bot
   notify: restart mark_spam
-  tags: mark_spam
 
 - name: Create virtualenv for mark_spam
   pip:
     requirements: /opt/src/mark_spam_bot/requirements.txt
     virtualenv: /opt/src/mark_spam_bot/venv
-  tags: mark_spam
 
 - name: Upload mark_spam config
   template:
     src: config.j2
     dest: /opt/src/mark_spam_bot/config.py
   notify: restart mark_spam
-  tags: mark_spam
 
 - name: Create systemd service
   become: yes
@@ -25,19 +22,13 @@
     src: mark_spam_bot.service
     dest: /etc/systemd/system/
   notify: restart mark_spam
-  tags: mark_spam
 
 - name: Enable mark_spam systemd module
   become: yes
   systemd:
     name: mark_spam_bot
     enabled: yes
-  tags: mark_spam
 
-- name: Install backup script for mark_spam
+- name: Set up backups
   become: yes
-  template:
-    src: backup_mark_spam.j2
-    dest: /etc/cron.daily/backup_mark_spam
-    mode: 0700
-  tags: mark_spam
+  import_tasks: backup.yml

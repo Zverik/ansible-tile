@@ -1,7 +1,35 @@
 ---
 - name: Install backup script
-  become: yes
   template:
     src: backup_hitrye.j2
     dest: /etc/cron.daily/backup_hitrye
     mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Restore hitrye files
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "Hitrye_"
+      - '*'
+    chdir: /
+
+- name: Restore hitrye database from the dump
+  when: restoring
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: hitrye
+    state: restore
+    target: /var/tmp/hitrye.pgc
+    target_opts: "--clean --if-exists"
+
+- name: Delete the temporary db dump
+  when: restoring
+  file:
+    path: /var/tmp/hitrye.pgc
+    state: absent

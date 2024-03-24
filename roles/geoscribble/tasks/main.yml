@@ -88,9 +88,6 @@
     state: link
   notify: reload apache
 
-- name: Install geoscribble backup script
+- name: Set up backups
   become: yes
-  template:
-    src: backup_geoscribble.j2
-    dest: /etc/cron.daily/backup_geoscribble
-    mode: 0700
+  import_tasks: backup.yml

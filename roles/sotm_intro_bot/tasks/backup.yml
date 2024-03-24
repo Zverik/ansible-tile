@@ -1,0 +1,31 @@
+---
+- name: Install backup script for sotm_intro_bot
+  template:
+    src: backup_intros.j2
+    dest: /etc/cron.daily/backup_intros
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Stop sotm_intro service if we're restoring
+  when: restoring
+  service:
+    name: sotm_intro_bot
+    state: stopped
+
+- name: Restore sotm_intro database
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "SotmIntro_"
+      - opt/src/sotm_intro_bot/intros.sqlite
+    chdir: /
+
+- name: Start sotm_intro service if we're restoring
+  when: restoring
+  service:
+    name: sotm_intro_bot
+    state: started

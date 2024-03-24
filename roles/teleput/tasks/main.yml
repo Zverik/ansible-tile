@@ -4,20 +4,20 @@
     repo: https://github.com/Zverik/teleput-server.git
     dest: /opt/src/teleput
   notify: restart teleput
-  tags: [teleput, update-teleput]
+  tags: update-teleput
 
 - name: Create virtualenv for teleput
   pip:
     requirements: /opt/src/teleput/requirements.txt
     virtualenv: /opt/src/teleput/venv
-  tags: [teleput, update-teleput]
+  tags: update-teleput
 
 - name: Upload teleput config
   template:
     src: config_local.j2
     dest: /opt/src/teleput/config_local.py
   notify: restart teleput
-  tags: [teleput, update-teleput]
+  tags: update-teleput
 
 - name: Create teleput systemd service
   become: yes
@@ -25,27 +25,23 @@
     src: teleput.service
     dest: /etc/systemd/system/
   notify: restart teleput
-  tags: teleput
 
 - name: Enable teleput systemd module
   become: yes
   systemd:
     name: teleput
     enabled: yes
-  tags: teleput
 
 - name: Ensure http_proxy is enabled
   become: yes
   apache2_module:
     name: proxy_http
     state: present
-  tags: teleput
 
 - name: Check that certificates exist
   stat:
     path: /etc/letsencrypt/certs/fullchain_teleput.textual.ru.crt
   register: cert_file
-  tags: teleput
 
 - name: Upload teleput apache config
   when: cert_file.stat.exists
@@ -54,7 +50,6 @@
     src: teleput.conf
     dest: /etc/apache2/sites-available/teleput.conf
   notify: reload apache
-  tags: teleput
 
 - name: Create teleput document root
   become: yes
@@ -62,7 +57,6 @@
     path: /var/www/teleput
     state: directory
     owner: zverik
-  tags: teleput
 
 - name: Enable teleput config if not yet
   become: yes
@@ -71,12 +65,7 @@
     path: /etc/apache2/sites-enabled/teleput.conf
     state: link
   notify: reload apache
-  tags: teleput
 
-- name: Install backup script for teleput
+- name: Set up backups
   become: yes
-  template:
-    src: backup_teleput.j2
-    dest: /etc/cron.daily/backup_teleput
-    mode: 0700
-  tags: teleput
+  import_tasks: backup.yml

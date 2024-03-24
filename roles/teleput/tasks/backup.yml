@@ -1,0 +1,32 @@
+---
+- name: Install backup script for teleput
+  become: yes
+  template:
+    src: backup_teleput.j2
+    dest: /etc/cron.daily/backup_teleput
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Stop teleput service if we're restoring
+  when: restoring
+  service:
+    name: teleput
+    state: stopped
+
+- name: Restore teleput database
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "Teleput_"
+      - opt/src/teleput/teleput.sqlite
+    chdir: /
+
+- name: Start teleput service if we're restoring
+  when: restoring
+  service:
+    name: teleput
+    state: started
