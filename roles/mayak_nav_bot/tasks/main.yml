@@ -10,7 +10,6 @@
   pip:
     requirements: /opt/src/mayak_nav/requirements.txt
     virtualenv: /opt/src/mayak_nav/venv
-    virtualenv_python: python3.9
   tags: mayak_nav
 
 - name: Make log directory
@@ -20,6 +19,12 @@
     state: directory
     owner: zverik
     group: zverik
+  tags: mayak_nav
+
+- name: Make config directory
+  file:
+    path: /opt/src/mayak_nav/config
+    state: directory
   tags: mayak_nav
 
 - name: Upload mayak_nav config

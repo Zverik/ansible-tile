@@ -1,2 +1,4 @@
 ---
 render_user: osm
+postgresql_version: 14
+postgis_version: 3

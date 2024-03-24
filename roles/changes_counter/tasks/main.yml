@@ -10,7 +10,6 @@
     state: latest
     requirements: /opt/src/osm-changes-counter/requirements.txt
     virtualenv: /opt/src/osm-changes-counter/venv
-    virtualenv_python: python3.9
   tags: changes
 
 - name: Initialize osm-counter log file

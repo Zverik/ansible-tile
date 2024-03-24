@@ -6,7 +6,6 @@
       - php-gd
       - php-imagick
       - php-json
-      - php-mcrypt
       - php-pgsql
       - php-xml
       - php-zip

@@ -19,7 +19,6 @@
   pip:
     requirements: /opt/src/nik4wsgi/requirements.txt
     virtualenv: /opt/src/nik4wsgi/venv
-    virtualenv_python: python3.5
 
 - name: Set up mod_wsgi for nik4wsgi
   become: yes

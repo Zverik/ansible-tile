@@ -8,7 +8,7 @@
     name:
       - osm2pgsql
       - osmosis
-      - libmapnik3.0
+      - libmapnik3.1
     state: present
 
 - name: Install mod_tile
@@ -17,7 +17,7 @@
 - name: Install osm-carto v3 style
   import_tasks: osm_carto.yml
   vars:
-    branch: v3.x
+    branch: v3.3.1
     dir: osm-carto
 
 - name: Install veloroad style

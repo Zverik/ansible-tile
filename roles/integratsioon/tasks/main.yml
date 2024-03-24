@@ -10,7 +10,6 @@
   pip:
     requirements: /opt/src/watch_integratsioon/requirements.txt
     virtualenv: /opt/src/watch_integratsioon/venv
-    virtualenv_python: python3.9
   tags: integratsioon
 
 - name: Upload watch_integratsioon config

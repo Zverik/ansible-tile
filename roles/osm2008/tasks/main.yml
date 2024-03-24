@@ -15,9 +15,9 @@
 - name: Download old data
   when: not has_2008.stdout
   get_url:
-    url: http://zverik.openstreetmap.ru/planet-080220.osm.pbf
+    url: https://zverik.dev.openstreetmap.org/planet-080102.osm.pbf
     dest: /var/tmp/planet-2008.osm.pbf
-    checksum: md5:d7cc5da0fa3c7894b3a891e1ab97d2e9
+    checksum: md5:04d9f31bf75e37017d2ce50508a0e567
 
 - name: Run osm2pgsql on old data
   when: not has_2008.stdout

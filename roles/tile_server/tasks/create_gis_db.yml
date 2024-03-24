@@ -1,4 +1,11 @@
 ---
+- name: Create render user
+  become: yes
+  user:
+    name: "{{ render_user }}"
+    password: '!'
+    state: present
+
 - name: Create {{ gisdb }} database
   become: yes
   become_user: postgres
@@ -43,7 +50,7 @@
 - name: Grant www-data user access to postgresql/osm
   become: yes
   lineinfile:
-    path: /etc/postgresql/9.5/main/pg_hba.conf
+    path: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
     insertafter: '# TYPE\s*DATABASE'
     regexp: '^local gis'
     line: local {{ gisdb }} {{ render_user }} trust

@@ -6,27 +6,10 @@
   notify: restart mark_spam
   tags: mark_spam
 
-- name: Install repo for python 3.9
-  become: yes
-  apt_repository:
-    repo: 'ppa:deadsnakes/ppa'
-    state: present
-
-- name: Install python 3.9
-  become: yes
-  apt:
-    pkg:
-      - python3.9
-      - python3.9-venv
-      - python3.9-dev
-    state: present
-    update_cache: yes
-
 - name: Create virtualenv for mark_spam
   pip:
     requirements: /opt/src/mark_spam_bot/requirements.txt
     virtualenv: /opt/src/mark_spam_bot/venv
-    virtualenv_python: python3.9
   tags: mark_spam
 
 - name: Upload mark_spam config

@@ -3,7 +3,6 @@
   git:
     repo: https://github.com/Zverik/veloroad.git
     dest: /opt/styles/veloroad
-    update: no
 
 - name: Download shapefiles
   command: ./get-shapefiles.sh

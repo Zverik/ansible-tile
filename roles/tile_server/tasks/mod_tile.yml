@@ -10,35 +10,8 @@
       - m4
       - libtool
       - libmapnik-dev
+      - libapache2-mod-tile
     state: present
-
-- name: Download mod_tile
-  git:
-    repo: https://github.com/SomeoneElseOSM/mod_tile.git
-    version: switch2osm
-    dest: /opt/src/mod_tile
-    update: no
-
-- name: Compile mod_tile
-  command: "{{ item }}"
-  args:
-    chdir: /opt/src/mod_tile
-    creates: /opt/src/mod_tile/.libs/renderd
-  with_items:
-    - ./autogen.sh
-    - ./configure
-    - make
-
-- name: Install mod_tile
-  become: yes
-  command: "{{ item }}"
-  args:
-    chdir: /opt/src/mod_tile
-    creates: /usr/lib/apache2/modules/mod_tile.so
-  with_items:
-    - make install
-    - make install-mod_tile
-    - ldconfig
 
 - name: Create mod_tile dirs
   become: yes

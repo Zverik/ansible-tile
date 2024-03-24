@@ -3,22 +3,15 @@
   become: yes
   apt:
     name:
-      - fonts-noto-cjk
-      - fonts-noto-hinted
-      - fonts-noto-unhinted
-      - ttf-unifont
       - npm
-      - nodejs-legacy
+      - nodejs
       - mapnik-utils
       - curl
     state: present
 
-- name: Install carto and millstone
+- name: Install carto
   become: yes
-  npm: name={{ item }} global=yes
-  with_items:
-    - carto
-    - millstone
+  npm: name=carto global=yes
 
 - name: Download osm-carto {{ branch }} style
   git:
@@ -28,10 +21,17 @@
     update: no
 
 - name: Download shapefiles
-  command: scripts/get-shapefiles.py
+  command: scripts/get-external-data.py
   args:
     chdir: /opt/styles/{{ dir }}
     creates: /opt/styles/{{ dir }}/data/antarctica-icesheet-polygons-3857/icesheet_polygons.index
+  when: branch != 'master'
+
+- name: Download fonts
+  command: scripts/get-fonts.sh
+  args:
+    chdir: /opt/styles/{{ dir }}
+    creates: /opt/styles/{{ dir }}/fonts/NotoEmoji-Bold.ttf
   when: branch != 'master'
 
 - name: Find temporary archives
@@ -55,7 +55,7 @@
   when: branch == 'master'
 
 - name: Create xml for osm-carto
-  command: carto -a 3.0.9 -q project.mml -f osm.xml
+  command: carto -q project.mml -f osm.xml
   args:
     chdir: /opt/styles/{{ dir }}
     creates: /opt/styles/{{ dir }}/osm.xml

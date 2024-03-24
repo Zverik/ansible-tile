@@ -18,7 +18,7 @@
   become: yes
   become_user: postgres
   lineinfile:
-    path: /etc/postgresql/9.5/main/pg_hba.conf
+    path: /etc/postgresql/14/main/pg_hba.conf
     insertafter: '# TYPE\s*DATABASE'
     regexp: '^local geoscribble'
     line: local geoscribble zverik trust
@@ -34,7 +34,13 @@
   pip:
     requirements: /opt/src/geoscribble/requirements.txt
     virtualenv: /opt/src/geoscribble/.venv
-    virtualenv_python: python3.9
+
+- name: Initialize log
+  become: yes
+  file:
+    path: /var/log/geoscribble.log
+    owner: zverik
+    state: touch
 
 - name: Create systemd service
   become: yes

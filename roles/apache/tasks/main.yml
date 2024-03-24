@@ -4,8 +4,11 @@
 
 - name: Enable cgi for apache
   apache2_module:
-    name: cgid
+    name: "{{ item }}"
     state: present
+  loop:
+    - ssl
+    - cgid
   notify: restart apache
 
 - name: Chown /var/www/html to zverik

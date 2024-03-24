@@ -14,19 +14,16 @@
       - fonts-noto-cjk
       - fonts-noto-hinted
       - fonts-noto-unhinted
-      - ttf-unifont
+      - fonts-unifont
       - npm
-      - nodejs-legacy
+      - nodejs
       - mapnik-utils
       - curl
     state: present
 
 - name: Install carto and millstone
   become: yes
-  npm: name={{ item }} global=yes
-  with_items:
-    - carto
-    - millstone
+  npm: name=carto global=yes
 
 - name: Download osm-carto {{ branch }} style
   git:
@@ -35,8 +32,19 @@
     dest: /opt/styles/{{ dir }}
     update: no
 
+- name: Replace get-shapefiles with the new one
+  copy:
+    src: get-shapefiles.py
+    dest: /opt/styles/{{ dir }}/scripts/get-shapefiles.py
+  when: branch != 'master'
+
+- name: Upload failing boundary lines
+  copy:
+    src: ne_110m_admin_0_boundary_lines_land.zip
+    dest: /var/www/html/
+
 - name: Download shapefiles
-  command: scripts/get-shapefiles.py
+  command: python3 scripts/get-shapefiles.py
   args:
     chdir: /opt/styles/{{ dir }}
     creates: /opt/styles/{{ dir }}/data/antarctica-icesheet-polygons-3857/icesheet_polygons.index

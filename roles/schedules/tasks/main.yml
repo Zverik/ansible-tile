@@ -14,7 +14,6 @@
     name: /opt/src/schedule-convert
     state: latest
     virtualenv: /opt/src/sc_venv
-    virtualenv_python: python3.5
     virtualenv_site_packages: yes
   tags: sotm
 

@@ -1,6 +1,6 @@
 ---
 - name: Install python for Ansible
-  raw: test -e /usr/bin/python || (apt -qy update && apt install -y python-minimal)
+  raw: test -e /usr/bin/python3 || (apt -qy update && apt install -y python3-minimal)
   register: output
   changed_when: output.stdout
 
@@ -18,7 +18,7 @@
   authorized_key:
     user: zverik
     state: present
-    key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCoO9fg6qIimSYSzzAo0PY8R7p7o7esCviyQ3U/YrCJqfglp6yJiVu/ipEQ59DhEI0ToGWi/4e37VaYiLApnxckJNRHb42eVsQ6Vk3GzxGnPG6xrQJ2OyLwjID96aP9pzQoUi4txUWovNX8JjUBjZzDOHxk0Cc/Bp0XgD1ldWcb65++Tob3Wq/fL87lR0N9DM9QCj2f1qxFs7rKuhSo+z9+7jxa4wRnrI1zOYaxX1xL6mzlzyBmXSAloTusZGu2oFPfGUyFUNmxY3yyZehHq4qcPEP02y2kUjJhcWSrJfc3Cf5iOHQLbH/QpKkiyzgssTe6NKzFIJO2A2QOO9ELw89 zverik@textual.ru
+    key: ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBP2SWls1C24jvQ9F3MVFQ2Lyl0zgWheBqellShhlF5d8RWP61/C8pr/ejiowEDxtTrvrd0iJum6amOvFp9I5eAXJGIoVxQiD0Y5ae+TaaVfsu/5XlwedQin31OmkdnRyrA== zverik@fedora
 
 - name: Add zverik to sudoers
   copy:

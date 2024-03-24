@@ -9,7 +9,6 @@
   pip:
     name: flask
     virtualenv: /opt/src/podcast_duration/venv
-    virtualenv_python: python3.5
 
 - name: Set up mod_wsgi for podcasts
   become: yes

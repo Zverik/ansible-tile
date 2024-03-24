@@ -23,7 +23,6 @@
   pip:
     requirements: /opt/src/a5a4/requirements.txt
     virtualenv: /opt/src/a5a4/venv
-    virtualenv_python: python3.5
 
 - name: Create /var/lib/a5a4
   become: yes

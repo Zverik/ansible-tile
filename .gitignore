@@ -5,3 +5,4 @@ roles.galaxy/
 *.swp
 *.retry
 .venv/
+ext_backups/

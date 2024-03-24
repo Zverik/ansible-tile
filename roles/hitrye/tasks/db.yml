@@ -10,7 +10,7 @@
 
 - name: Allow logging in as phpbb by anybody
   lineinfile:
-    path: /etc/postgresql/9.5/main/pg_hba.conf
+    path: /etc/postgresql/14/main/pg_hba.conf
     insertafter: '# TYPE\s*DATABASE'
     regexp: '^local hitrye'
     line: local hitrye phpbb trust

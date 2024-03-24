@@ -1,0 +1,18 @@
+---
+- name: Download borg
+  get_url:
+    url: "https://github.com/borgbackup/borg/releases/download/{{ borg_version }}/borg-linux64"
+    dest: /usr/local/bin/borg
+    mode: 0755
+    checksum: "md5:{{ borg_exec_md5 }}"
+
+- name: Create a private key
+  copy:
+    content: "{{ borg_key }}"
+    dest: /root/.ssh/borg
+    mode: 0600
+
+- name: Add rsync.net to authorized keys
+  known_hosts:
+    host: ch-s012.rsync.net
+    key: "{{ rsync_key }}"

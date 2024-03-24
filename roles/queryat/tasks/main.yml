@@ -14,7 +14,6 @@
   pip:
     requirements: /opt/src/queryat/requirements.txt
     virtualenv: /opt/src/queryat/venv
-    virtualenv_python: python3.5
 
 - name: Set up mod_wsgi for queryat
   become: yes

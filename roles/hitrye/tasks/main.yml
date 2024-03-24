@@ -25,5 +25,4 @@
   import_tasks: apache.yml
 
 - name: Set up backups
-  become: yes
   import_tasks: backup.yml
