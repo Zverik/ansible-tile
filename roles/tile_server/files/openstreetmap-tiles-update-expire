@@ -6,7 +6,7 @@ set -e
 #*************************************************************************
 OSMOSIS_BIN=osmosis
 OSM2PGSQL_BIN=osm2pgsql
-OSM2PGSQL_OPTIONS="-S /opt/styles/veloroad/veloroad.style"
+OSM2PGSQL_OPTIONS="-S /opt/styles/veloroad/veloroad.style -d gis"
 #OSM2PGSQL_OPTIONS="--flat-nodes /path/to/flatnodes --hstore"
 
 REPLAG=/opt/src/mod_tile/osmosis-db_replag
@@ -123,7 +123,7 @@ else
 
     m_ok "importing diff"
     EXPIRY_METAZOOM=`expr $EXPIRY_MAXZOOM - 3`
-    if ! $OSM2PGSQL_BIN -a --slim -e$EXPIRY_METAZOOM:$EXPIRY_METAZOOM $OSM2PGSQL_OPTIONS -o "$EXPIRY_FILE.$$" $CHANGE_FILE 1>&2 2> "$PGSQLLOG"; then
+    if ! $OSM2PGSQL_BIN -a --slim -e$EXPIRY_MINZOOM-$EXPIRY_METAZOOM $OSM2PGSQL_OPTIONS -o "$EXPIRY_FILE.$$" $CHANGE_FILE 1>&2 2> "$PGSQLLOG"; then
         m_error "osm2pgsql error"
     fi
 

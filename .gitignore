@@ -6,3 +6,4 @@ roles.galaxy/
 *.retry
 .venv/
 ext_backups/
+tile_bounds.geojson

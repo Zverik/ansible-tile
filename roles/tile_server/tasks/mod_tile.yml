@@ -27,7 +27,7 @@
   become: yes
   copy:
     src: renderd.conf
-    dest: /usr/local/etc/renderd.conf
+    dest: /etc/renderd.conf
     force: no
 
 - name: Copy apache module config
@@ -49,7 +49,7 @@
     path: /etc/apache2/sites-available/000-default.conf
     insertbefore: '^\s*DocumentRoot'
     block: |
-      LoadTileConfigFile /usr/local/etc/renderd.conf
+      LoadTileConfigFile /etc/renderd.conf
       ModTileRenderdSocketName /var/run/renderd/renderd.sock
       # Timeout before giving up for a tile to be rendered
       ModTileRequestTimeout 0
@@ -57,29 +57,12 @@
       ModTileMissingRequestTimeout 30
   notify: restart apache
 
-- name: Copy renderd.init to init.d
-  become: yes
-  copy:
-    src: /opt/src/mod_tile/debian/renderd.init
-    dest: /etc/init.d/renderd
-    mode: 0755
-    remote_src: yes
-    force: no
-
-- name: Edit renderd.init to replace the user account
+- name: Edit renderd service to replace the user account
   become: yes
   lineinfile:
-    path: /etc/init.d/renderd
-    regexp: '^RUNASUSER='
-    line: RUNASUSER={{ render_user }}
-
-- name: Copy renderd systemd module
-  become: yes
-  copy:
-    src: /opt/src/mod_tile/debian/renderd.service
-    dest: /lib/systemd/system/renderd.service
-    remote_src: yes
-    force: no
+    path: /lib/systemd/system/renderd.service
+    regexp: '^User='
+    line: User={{ render_user }}
 
 - name: Enable renderd systemd module
   become: yes

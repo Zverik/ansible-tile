@@ -9,6 +9,7 @@
       - osm2pgsql
       - osmosis
       - libmapnik3.1
+      - gdal-bin
     state: present
 
 - name: Install mod_tile

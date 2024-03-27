@@ -47,21 +47,9 @@
     - name: Import pbf
       become_user: "{{ render_user }}"
       become: yes
-      command: osm2pgsql -C {{ ansible_memfree_mb - 100 }} --slim -S "{{ style }}" -d {{ gisdb }} --number-processes 2 "{{ planet }}"
-      async: 9000
-      poll: 0
-      register: osm2pgsql_job
-      tags: osm2pgsql
-
-    - name: Wait for osm2pgsql to finish
-      become_user: "{{ render_user }}"
-      become: yes
-      async_status:
-        jid: "{{ osm2pgsql_job.ansible_job_id }}"
-      register: osm2pgsql_status
-      until: osm2pgsql_status.finished
-      retries: 300
-      delay: 30
+      command: osm2pgsql -C {{ ansible_memfree_mb - 500 }} --slim -S "{{ style }}" -d {{ gisdb }} --number-processes 2 "{{ planet }}"
+      async: 30000 # ~8 hours
+      poll: 30
       tags: osm2pgsql
 
     - name: Remove pbf
