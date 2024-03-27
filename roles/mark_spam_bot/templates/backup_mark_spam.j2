@@ -1,16 +1,2 @@
 #!/bin/bash
-set -u -e
-BORG=/usr/local/bin/borg
-export BORG_REPO={{ borg_repo }}
-export BORG_PASSPHRASE='{{ borg_pass }}'
-export BORG_REMOTE_PATH=borg1
-export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
-
-systemctl stop mark_spam_bot
-
-$BORG create --compression zstd,5 ::'MarkSpam_{now:%Y-%m-%d_%H%M}' \
-  /opt/src/mark_spam_bot/markspam.sqlite
-
-$BORG prune --prefix 'MarkSpam_' --keep-daily=3 --keep-weekly=1 --keep-monthly=1
-
-systemctl start mark_spam_bot
+/root/make_backup MarkSpam /opt/src/mark_spam_bot/markspam.sqlite

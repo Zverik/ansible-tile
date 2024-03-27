@@ -1,19 +1,12 @@
 #!/bin/bash
 set -u -e
-BORG=/usr/local/bin/borg
-export BORG_REPO={{ borg_repo }}
-export BORG_PASSPHRASE='{{ borg_pass }}'
-export BORG_REMOTE_PATH=borg1
-export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
 
 DBDUMP=/var/tmp/hitrye.pgc
 pg_dump -U phpbb --format=c --file=$DBDUMP hitrye
 
-$BORG create --compression zstd,5 ::'Hitrye_{now:%Y-%m-%d_%H%M}' \
+/root/make_backup Hitrye \
   $DBDUMP \
   /var/www/hitrye/files \
   /var/www/hitrye/images/avatars/upload
-
-$BORG prune --prefix 'Hitrye_' --keep-daily=7 --keep-weekly=2 --keep-monthly=3
 
 rm $DBDUMP

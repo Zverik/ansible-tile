@@ -1,16 +1,2 @@
 #!/bin/bash
-set -u -e
-BORG=/usr/local/bin/borg
-export BORG_REPO={{ borg_repo }}
-export BORG_PASSPHRASE='{{ borg_pass }}'
-export BORG_REMOTE_PATH=borg1
-export BORG_RSH='ssh -i /root/.ssh/borg -oBatchMode=yes'
-
-systemctl stop integratsioon
-
-$BORG create --compression zstd,5 ::'Integratsioon_{now:%Y-%m-%d_%H%M}' \
-  /opt/src/watch_integratsioon/wi_users.sqlite
-
-$BORG prune --prefix 'Integratsioon_' --keep-daily=3 --keep-weekly=1 --keep-monthly=1
-
-systemctl start integratsioon
+/root/make_backup Integratsioon /opt/src/watch_integratsioon/wi_users.sqlite

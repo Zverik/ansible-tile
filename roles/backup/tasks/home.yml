@@ -1,7 +1,7 @@
 ---
 - name: Upload the home backup script
-  template:
-    src: backup_files.j2
+  copy:
+    src: backup_files
     dest: /etc/cron.daily/backup_files
     mode: 0700
 

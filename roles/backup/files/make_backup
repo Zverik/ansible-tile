@@ -1,0 +1,12 @@
+#!/bin/bash
+set -u -e
+[ "$(whoami)" != "root" ] && echo "Please run this script as a root" && exit 1
+[ $# -lt 2 ] && echo "Usage: $0 <prefix> <path> [<path> ...]" && exit 1
+
+source /root/borg_env
+PREFIX="$1"
+shift
+
+$BORG create --compression zstd,5 ::"${PREFIX}_{now:%Y-%m-%d_%H%M}" $@
+
+$BORG prune --glob-archives "${PREFIX}_*" --keep-daily=7 --keep-weekly=2 --keep-monthly=3

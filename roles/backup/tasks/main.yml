@@ -17,15 +17,27 @@
     host: ch-s012.rsync.net
     key: "{{ rsync_key }}"
 
-- name: Add compacting job once a week
+- name: Upload borg_env
   template:
-    src: compact_backups.j2
+    src: borg_env.j2
+    dest: /root/borg_env
+    mode: 0700
+
+- name: Add compacting job once a week
+  copy:
+    src: compact_backups
     dest: /etc/cron.weekly/compact_backups
     mode: 0700
 
+- name: Upload the backup script
+  copy:
+    src: make_backup
+    dest: /root/make_backup
+    mode: 0700
+
 - name: Upload the extraction script
-  template:
-    src: extract_backup.j2
+  copy:
+    src: extract_backup
     dest: /root/extract_backup
     mode: 0700
 
