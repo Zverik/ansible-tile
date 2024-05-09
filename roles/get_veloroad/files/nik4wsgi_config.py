@@ -1,4 +1,4 @@
-PYTHON = 'python3.5'
+PYTHON = 'python3'
 NIK4 = '/opt/src/Nik4/nik4.py'
 
 STYLES = [

@@ -22,7 +22,7 @@
   roles:
     - tile_server
     - osm2008
-    - get_veloroad
+    - { role: get_veloroad, tags: get_veloroad }
     - a5a4
     - stats
     - { role: hitrye, tags: hitrye }
