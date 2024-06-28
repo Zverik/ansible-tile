@@ -10,11 +10,13 @@
       - sotm.osmz.ru
       - teleput.textual.ru
       - hitrye.ru
+      - archive.hitrye.ru
       - geoscribble.osmz.ru
     http_roots:
       "sotm.osmz.ru": /var/www/sotm
       "teleput.textual.ru": /var/www/teleput
       "hitrye.ru": /var/www/hitrye
+      "archive.hitrye.ru": /var/www/hitrye_archive
       "geoscribble.osmz.ru": /var/www/geoscribble
   tasks:
     - name: Test certificate ages

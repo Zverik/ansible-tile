@@ -1,0 +1,53 @@
+---
+- name: Create hitrye archive directory
+  become: yes
+  file:
+    path: /var/www/hitrye_archive
+    state: directory
+    owner: zverik
+
+- name: Add hitrye archive to backup
+  become: yes
+  cron:
+    name: backup hitrye archive
+    minute: 0
+    hour: 4
+    job: /root/make_backup HArchive /var/www/hitrye_archive
+
+- name: Restore hitrye archive
+  become: yes
+  when: "'restore' in ansible_run_tags"
+  command:
+    argv:
+      - /root/extract_backup
+      - HArchive_
+      - '*'
+    chdir: /
+
+- name: Check that certificates exist
+  stat:
+    path: /etc/letsencrypt/certs/fullchain_archive.hitrye.ru.crt
+  register: ah_cert_file
+
+- name: Upload apache config
+  become: yes
+  template:
+    src: hitrye_archive.conf
+    dest: /etc/apache2/sites-available
+  notify: reload apache
+
+- name: Create apache log dir
+  become: yes
+  file:
+    path: /var/log/apache2/hitrye
+    state: directory
+    owner: www-data
+    mode: 0755
+
+- name: Symlink apache config
+  become: yes
+  file:
+    src: /etc/apache2/sites-available/hitrye_archive.conf
+    dest: /etc/apache2/sites-enabled/hitrye_archive.conf
+    state: link
+  notify: reload apache

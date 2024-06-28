@@ -31,15 +31,12 @@
 
 - name: Upload the backup script
   copy:
-    src: make_backup
-    dest: /root/make_backup
+    src: "{{ item }}"
+    dest: "/root/{{ item }}"
     mode: 0700
-
-- name: Upload the extraction script
-  copy:
-    src: extract_backup
-    dest: /root/extract_backup
-    mode: 0700
+  loop:
+    - make_backup
+    - extract_backup
 
 - name: Set up home backups
   import_tasks: home.yml

@@ -20,15 +20,14 @@
 - hosts: all
   remote_user: zverik
   roles:
-    - tile_server
-    - osm2008
+    - { role: tile_server, tags: tiles }
+    - { role: osm2008, tags: osm2008 }
     - { role: get_veloroad, tags: get_veloroad }
-    - a5a4
-    - stats
+    - { role: a5a4, tags: a5a4 }
+    - { role: stats, tags: stats }
     - { role: hitrye, tags: hitrye }
-    - { role: schedules, tags: schedules }
+    - { role: hitrye_archive, tags: hitrye_archive }
     - { role: mayak_nav_bot, tags: mayak_nav_bot }
     - { role: mark_spam_bot, tags: mark_spam_bot }
     - { role: teleput, tags: teleput }
-    - { role: integratsioon, tags: integratsioon }
     - { role: geoscribble, tags: geoscribble }
