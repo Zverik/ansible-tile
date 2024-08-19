@@ -10,8 +10,6 @@ Group=zverik
 WorkingDirectory=/opt/src/watch_integratsioon
 ExecStart=/opt/src/watch_integratsioon/venv/bin/python watch_integratsioon.py
 Environment=PYTHONUNBUFFERED=1
-StandardOutput=syslog
-StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target

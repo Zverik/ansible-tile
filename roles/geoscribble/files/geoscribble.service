@@ -8,14 +8,10 @@ Restart=on-failure
 User=zverik
 Group=zverik
 WorkingDirectory=/opt/src/geoscribble
-ExecStart=/opt/src/geoscribble/.venv/bin/uvicorn --port 3007 web.main:app
+ExecStart=/opt/src/geoscribble/.venv/bin/gunicorn --workers 2 --worker-class proxy_worker.ProxyUvicornWorker --bind 0.0.0.0:3007 --proxy-protocol --forwarded-allow-ips '*' web.main:app
 Environment=PYTHONUNBUFFERED=1
-Environment=BASE_URL=https://geoscribble.osmz.ru
-Environment=PGHOST=/var/run/postgresql
-Environment=PGUSER=zverik
-Environment=PGDATABASE=geoscribble
 StandardOutput=append:/var/log/geoscribble.log
-StandardError=syslog
+StandardError=append:/var/log/geoscribble.log
 
 [Install]
 WantedBy=multi-user.target

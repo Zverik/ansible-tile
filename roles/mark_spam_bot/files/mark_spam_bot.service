@@ -10,8 +10,6 @@ Group=zverik
 WorkingDirectory=/opt/src/mark_spam_bot
 ExecStart=/opt/src/mark_spam_bot/venv/bin/python markbot.py
 Environment=PYTHONUNBUFFERED=1
-StandardOutput=syslog
-StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target

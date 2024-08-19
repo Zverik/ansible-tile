@@ -10,8 +10,6 @@ Group=zverik
 WorkingDirectory=/opt/src/sotm_intro_bot
 ExecStart=/opt/src/sotm_intro_bot/venv/bin/python sotm_intro_bot.py
 Environment=PYTHONUNBUFFERED=1
-StandardOutput=syslog
-StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target

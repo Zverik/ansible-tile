@@ -10,8 +10,6 @@ Group=zverik
 WorkingDirectory=/opt/src/mayak_nav
 ExecStart=/opt/src/mayak_nav/venv/bin/python -m raybot
 Environment=PYTHONUNBUFFERED=1
-StandardOutput=syslog
-StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target

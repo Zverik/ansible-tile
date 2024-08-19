@@ -35,6 +35,12 @@
     requirements: /opt/src/geoscribble/requirements.txt
     virtualenv: /opt/src/geoscribble/.venv
 
+- name: Upload geoscribble config
+  template:
+    src: config_local.j2
+    dest: /opt/src/geoscribble/web/config_local.py
+  notify: restart geoscribble
+
 - name: Initialize log
   become: yes
   file:
@@ -55,11 +61,14 @@
     name: geoscribble
     enabled: yes
 
-- name: Ensure http_proxy is enabled
+- name: Ensure http_proxy and headers mods is enabled
   become: yes
   apache2_module:
-    name: proxy_http
+    name: "{{ item }}"
     state: present
+  loop:
+    - proxy_http
+    - headers
 
 - name: Check that certificates exist
   stat:
@@ -91,3 +100,10 @@
 - name: Set up backups
   become: yes
   import_tasks: backup.yml
+
+- name: Regular task updates
+  cron:
+    name: geoscribble_tasks
+    minute: "2,22,42"
+    hour: "*"
+    job: "cd /opt/src/geoscribble && .venv/bin/python -m web.update_tasks"
