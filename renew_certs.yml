@@ -7,11 +7,13 @@
     acme_version: 2
     domains: []
     base_domains:
+      - tile.osmz.ru
       - teleput.textual.ru
       - hitrye.ru
       - archive.hitrye.ru
       - geoscribble.osmz.ru
     http_roots:
+      "tile.osmz.ru": /var/www/html
       "teleput.textual.ru": /var/www/teleput
       "hitrye.ru": /var/www/hitrye
       "archive.hitrye.ru": /var/www/hitrye_archive

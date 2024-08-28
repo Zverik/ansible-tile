@@ -11,7 +11,7 @@
 - name: Add renderd sections for these styles
   become: yes
   blockinfile:
-    path: /usr/local/etc/renderd.conf
+    path: /etc/renderd.conf
     insertafter: EOF
     marker: '# {mark} small styles'
     block: |

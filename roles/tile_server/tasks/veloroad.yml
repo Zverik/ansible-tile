@@ -32,7 +32,7 @@
 - name: Add renderd section for veloroad
   become: yes
   blockinfile:
-    path: /usr/local/etc/renderd.conf
+    path: /etc/renderd.conf
     insertafter: EOF
     marker: '# {mark} veloroad'
     block: |

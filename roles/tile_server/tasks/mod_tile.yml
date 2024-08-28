@@ -45,16 +45,19 @@
 
 - name: Add renderd section to apache
   become: yes
-  blockinfile:
-    path: /etc/apache2/sites-available/000-default.conf
-    insertbefore: '^\s*DocumentRoot'
-    block: |
-      LoadTileConfigFile /etc/renderd.conf
-      ModTileRenderdSocketName /var/run/renderd/renderd.sock
-      # Timeout before giving up for a tile to be rendered
-      ModTileRequestTimeout 0
-      # Timeout before giving up for a tile to be rendered that is otherwise missing
-      ModTileMissingRequestTimeout 30
+  copy:
+    src: site.conf
+    dest: /etc/apache2/sites-available/renderd.conf
+  notify: restart apache
+
+- name: Enable the renderd site
+  become: yes
+  command: a2ensite renderd
+  notify: restart apache
+
+- name: Disable the default site
+  become: yes
+  command: a2dissite 000-default
   notify: restart apache
 
 - name: Edit renderd service to replace the user account

@@ -79,7 +79,7 @@
 - name: Add renderd section for osm-carto
   become: yes
   blockinfile:
-    path: /usr/local/etc/renderd.conf
+    path: /etc/renderd.conf
     insertafter: EOF
     marker: '# {mark} osm-carto'
     block: |
@@ -97,7 +97,7 @@
 - name: Add renderd section for osm-carto-4
   become: yes
   blockinfile:
-    path: /usr/local/etc/renderd.conf
+    path: /etc/renderd.conf
     insertafter: EOF
     marker: '# {mark} osm-carto 4'
     block: |
