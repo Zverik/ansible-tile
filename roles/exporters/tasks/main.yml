@@ -15,6 +15,7 @@
   postgresql_user:
     name: "{{ postgres_exporter_username }}"
     password: "{{ postgres_exporter_password }}"
+    role_attr_flags: NOSUPERUSER
 
 - name: Grant read to exporter psql user
   become: yes

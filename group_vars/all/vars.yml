@@ -42,6 +42,8 @@ letsencrypt_account_key: "{{ v_letsencrypt_account_key }}"
 teleput_telegram_token: "{{ v_teleput_telegram_token }}"
 teleput_path: "{{ v_teleput_path }}"
 
+postgres_exporter_name: ""
+postgres_exporter_uri: "localhost:5432/postgres?sslmode=disable"
 postgres_exporter_username: exporter
 postgres_exporter_password: "{{ v_postgres_exporter_password }}"
 
