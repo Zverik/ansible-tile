@@ -1,0 +1,35 @@
+---
+- name: Open exporter ports
+  ufw:
+    port: "{{ item }}"
+    proto: tcp
+    rule: allow
+  with_items:
+    - 9100
+    - 9187
+  notify: restart ufw
+
+- name: Add postgresql superuser for the exporter
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: "{{ postgres_exporter_username }}"
+    password: "{{ postgres_exporter_password }}"
+
+- name: Grant read to exporter psql user
+  become: yes
+  become_user: postgres
+  postgresql_privs:
+    role: "{{ postgres_exporter_username }}"
+    database: postgres
+    type: database
+    privs: CONNECT
+
+- name: Grant pg_monitor to exporter psql user
+  become: yes
+  become_user: postgres
+  postgresql_query:
+    query:
+      - "ALTER USER {{ postgres_exporter_username }} SET SEARCH_PATH TO {{ postgres_exporter_username }},pg_catalog;"
+      - "grant pg_monitor to {{ postgres_exporter_username }}"
+    db: postgres

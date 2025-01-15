@@ -16,6 +16,15 @@
     - postgis
     - python3
     - { role: backup, tags: backup }
+    - { role: robertdebock.logrotate, tags: logrotate }
+
+- hosts: all
+  become: yes
+  roles:
+    - exporters
+    - prometheus.prometheus.node_exporter
+    - prometheus.prometheus.postgres_exporter
+  tags: [exporters]
 
 - hosts: all
   remote_user: zverik
