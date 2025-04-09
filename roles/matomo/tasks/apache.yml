@@ -1,0 +1,28 @@
+---
+- name: Check that certificates exist
+  stat:
+    path: /etc/letsencrypt/certs/fullchain_matomo.tile.osmz.ru.crt
+  register: cert_file
+
+- name: Upload apache config
+  template:
+    src: domain.j2
+    dest: /etc/apache2/sites-available/matomo.conf
+  notify: reload apache
+
+- name: Create apache log dir
+  file:
+    path: /var/log/apache2/matomo
+    state: directory
+
+- name: Upload logrotate config
+  copy:
+    src: logrotate.conf
+    dest: /etc/logrotate.d/apache2-matomo
+
+- name: Symlink apache config
+  file:
+    src: /etc/apache2/sites-available/matomo.conf
+    dest: /etc/apache2/sites-enabled/matomo.conf
+    state: link
+  notify: reload apache

@@ -11,6 +11,7 @@
   remote_user: root
   roles:
     - geerlingguy.ntp
+    - { role: geerlingguy.mysql, tags: mysql }
     - apache
     - firewall
     - postgis
@@ -24,6 +25,7 @@
     - exporters
     - prometheus.prometheus.node_exporter
     - prometheus.prometheus.postgres_exporter
+    - prometheus.prometheus.mysqld_exporter
   tags: [exporters]
 
 - hosts: all
@@ -35,6 +37,7 @@
     - { role: a5a4, tags: a5a4 }
     - { role: stats, tags: stats }
     - { role: hitrye, tags: hitrye }
+    - { role: matomo, tags: matomo }
     - { role: hitrye_archive, tags: hitrye_archive }
     - { role: mayak_nav_bot, tags: mayak_nav_bot }
     - { role: mark_spam_bot, tags: mark_spam_bot }

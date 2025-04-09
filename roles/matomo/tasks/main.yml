@@ -1,0 +1,61 @@
+---
+- name: Install PHP packages
+  become: yes
+  apt:
+    name:
+      - php7.4-curl
+      - php7.4-gd
+      - php7.4-cli
+      - php7.4-mysql
+      - php7.4-xml
+      - php7.4-mbstring
+    state: present
+
+- name: Set up Matomo database
+  mysql_db:
+    name: "{{ matomo_mysql_database }}"
+
+- name: Add Matomo MySQL user
+  mysql_user:
+    name: "{{ matomo_mysql_user }}"
+    password: "{{ matomo_mysql_password }}"
+    priv: "*.*:FILE/{{ matomo_mysql_database}}.*:ALL"
+
+- name: Create target dir
+  become: yes
+  file:
+    path: "{{ matomo_path }}"
+    state: directory
+    owner: zverik
+    group: zverik
+
+- name: Check that Matomo is installed
+  stat:
+    path: "{{ matomo_path }}/matomo/matomo.php"
+  register: matomo_file
+
+- name: Download Matomo
+  when: not matomo_file.stat.exists
+  get_url:
+    url: "https://builds.matomo.org/matomo.zip"
+    dest: /var/tmp/matomo.zip
+
+- name: Unpack Matomo
+  when: not matomo_file.stat.exists
+  unarchive:
+    remote_src: yes
+    src: /var/tmp/matomo.zip
+    dest: "{{ matomo_path }}"
+
+- name: Set owner to matomo
+  become: yes
+  file:
+    path: "{{ matomo_path }}"
+    state: directory
+    owner: "{{ matomo_user }}"
+    group: "{{ matomo_user }}"
+    recurse: true
+
+- name: Install the domain
+  become: yes
+  import_tasks: apache.yml

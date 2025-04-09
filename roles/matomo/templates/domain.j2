@@ -1,0 +1,29 @@
+<VirtualHost *:80>
+	ServerName matomo.tile.osmz.ru
+	DocumentRoot /var/www/matomo/matomo
+	ErrorLog ${APACHE_LOG_DIR}/matomo/error.log
+	CustomLog ${APACHE_LOG_DIR}/matomo/access.log combined
+
+	<Directory /var/www/matomo/matomo>
+		Options FollowSymLinks Includes MultiViews
+		AllowOverride All
+	</Directory>
+</VirtualHost>
+
+{% if cert_file.stat.exists %}
+<VirtualHost *:443>
+  ServerName matomo.tile.osmz.ru
+	DocumentRoot /var/www/matomo/matomo
+	ErrorLog ${APACHE_LOG_DIR}/matomo/error.log
+	CustomLog ${APACHE_LOG_DIR}/matomo/access.log combined
+
+	<Directory /var/www/matomo/matomo>
+		Options FollowSymLinks Includes MultiViews
+		AllowOverride All
+	</Directory>
+
+  SSLEngine on
+  SSLCertificateFile "/etc/letsencrypt/certs/fullchain_matomo.tile.osmz.ru.crt"
+  SSLCertificateKeyFile "/etc/letsencrypt/keys/matomo.tile.osmz.ru.key"
+</VirtualHost>
+{% endif %}

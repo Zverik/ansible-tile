@@ -1,4 +1,4 @@
 ---
-- src: oefenweb.swapfile
 - src: geerlingguy.ntp
+- src: geerlingguy.mysql
 - src: robertdebock.logrotate

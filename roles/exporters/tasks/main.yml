@@ -34,3 +34,9 @@
       - "ALTER USER {{ postgres_exporter_username }} SET SEARCH_PATH TO {{ postgres_exporter_username }},pg_catalog;"
       - "grant pg_monitor to {{ postgres_exporter_username }}"
     db: postgres
+
+- name: Add mysql user for the exporter
+  mysql_user:
+    name: "{{ mysqld_exporter_username }}"
+    password: "{{ mysqld_exporter_password }}"
+    priv: '*.*:ALL'

@@ -150,6 +150,17 @@
     - icon_e_smile.gif
     - icon_e_wink.gif
 
+- name: Upload matomo script
+  copy:
+    src: matomo.js
+    dest: "{{ hitrye_path }}/styles/prosilver/template/matomo.js"
+
+- name: Add include matomo
+  lineinfile:
+    path: "{{ hitrye_path }}/styles/prosilver/template/overall_footer.html"
+    insertbefore: '^\{\$SCRIPTS\}'
+    line: "<!-- INCLUDEJS matomo.js -->"
+
 - name: Write installed version
   become: yes
   copy:

@@ -1,0 +1,3 @@
+---
+matomo_path: /var/www/matomo
+matomo_user: www-data

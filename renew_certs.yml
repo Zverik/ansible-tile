@@ -12,12 +12,14 @@
       - hitrye.ru
       - archive.hitrye.ru
       - geoscribble.osmz.ru
+      - matomo.tile.osmz.ru
     http_roots:
       "tile.osmz.ru": /var/www/html
       "teleput.textual.ru": /var/www/teleput
       "hitrye.ru": /var/www/hitrye
       "archive.hitrye.ru": /var/www/hitrye_archive
       "geoscribble.osmz.ru": /var/www/geoscribble
+      "matomo.tile.osmz.ru": /var/www/matomo/matomo
   tasks:
     - name: Test certificate ages
       stat:

@@ -46,6 +46,14 @@ postgres_exporter_name: ""
 postgres_exporter_uri: "localhost:5432/postgres?sslmode=disable"
 postgres_exporter_username: exporter
 postgres_exporter_password: "{{ v_postgres_exporter_password }}"
+mysqld_exporter_username: exporter
+mysqld_exporter_password: "{{ v_mysqld_exporter_password }}"
+
+mysql_root_password: "{{ v_mysql_root_password }}"
+mysql_user_home: /home/zverik
+mysql_user_name: zverik
+mysql_user_password: "{{ v_mysql_user_password }}"
+mysql_packages: [mariadb-client, mariadb-server, python3-mysqldb]
 
 logrotate_frequency: weekly
 logrotate_keep: 4
@@ -53,3 +61,10 @@ logrotate_compress: true
 logrotate_entries:
   - name: geoscribble
     path: /var/log/geoscribble.log
+
+matomo_mysql_database: matomo
+matomo_mysql_user: matomo
+matomo_mysql_password: "{{ v_matomo_mysql_password }}"
+matomo_superuser_login: zverik
+matomo_superuser_password: "{{ v_matomo_superuser_password }}"
+matomo_superuser_email: "{{ admin_email }}"
