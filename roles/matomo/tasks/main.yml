@@ -56,6 +56,14 @@
     group: "{{ matomo_user }}"
     recurse: true
 
+- name: Upload the config
+  become: yes
+  template:
+    src: config.js
+    dest: "{{ matomo_path }}/config/config.ini.php"
+    owner: "{{ matomo_user }}"
+    group: "{{ matomo_user }}"
+
 - name: Install the domain
   become: yes
   import_tasks: apache.yml

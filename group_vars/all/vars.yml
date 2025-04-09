@@ -68,3 +68,4 @@ matomo_mysql_password: "{{ v_matomo_mysql_password }}"
 matomo_superuser_login: zverik
 matomo_superuser_password: "{{ v_matomo_superuser_password }}"
 matomo_superuser_email: "{{ admin_email }}"
+matomo_salt: "{{ v_matomo_salt }}"
