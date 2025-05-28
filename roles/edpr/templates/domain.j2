@@ -1,0 +1,26 @@
+<VirtualHost *:80>
+  ServerName {{ domain }}
+  DocumentRoot /var/www/edpr
+
+  <Directory /var/www/edpr>
+    AllowOverride All
+  </Directory>
+</VirtualHost>
+
+{% if edpr_cert.stat.exists %}
+<VirtualHost *:443>
+  ServerName {{ domain }}
+
+  ProxyPass / http://localhost:{{ edpr_port }}/
+  ProxyPassReverse / http://localhost:{{ edpr_port }}/
+  RequestHeader set X-Forwarded-Proto https
+  RequestHeader set X-Forwarded-Prefix /
+
+  CustomLog /var/log/apache2/{{ domain }}/access_log combined
+  ErrorLog /var/log/apache2/{{ domain }}/error_log
+
+  SSLEngine on
+  SSLCertificateFile "/etc/letsencrypt/certs/fullchain_{{ domain }}.crt"
+  SSLCertificateKeyFile "/etc/letsencrypt/keys/{{ domain }}.key"
+</VirtualHost>
+{% endif %}

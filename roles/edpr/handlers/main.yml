@@ -1,0 +1,7 @@
+---
+- name: restart edpr
+  become: yes
+  systemd:
+    name: edpr
+    state: restarted
+

@@ -1,0 +1,9 @@
+#!/bin/bash
+set -u -e
+
+DBDUMP=/var/tmp/edpr.pgc
+pg_dump -U zverik --format=c --file=$DBDUMP edpr
+
+/root/make_backup EDPR $DBDUMP
+
+rm $DBDUMP

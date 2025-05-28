@@ -43,3 +43,4 @@
     - { role: mark_spam_bot, tags: mark_spam_bot }
     - { role: teleput, tags: teleput }
     - { role: geoscribble, tags: geoscribble }
+    - { role: edpr, tags: edpr }

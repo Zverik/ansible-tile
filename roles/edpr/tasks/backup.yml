@@ -1,0 +1,41 @@
+---
+- name: Install edpr backup script
+  template:
+    src: backup_edpr.j2
+    dest: /etc/cron.daily/backup_edpr
+    mode: 0700
+
+- name: Test if we're restoring
+  set_fact:
+    restoring: "{{ 'restore' in ansible_run_tags }}"
+
+- name: Restore edpr database dump
+  when: restoring
+  command:
+    argv:
+      - "/root/extract_backup"
+      - "EDPR_"
+      - var/tmp/edpr.pgc
+    chdir: /
+
+- name: Restore edpr database from the dump
+  when: restoring
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: edpr
+    state: restore
+    target: /var/tmp/edpr.pgc
+    target_opts: "--clean --if-exists"
+
+- name: Delete the temporary db dump
+  when: restoring
+  file:
+    path: /var/tmp/edpr.pgc
+    state: absent
+
+- name: Restart edpr service if we're restoring
+  when: restoring
+  service:
+    name: edpr
+    state: restarted

@@ -1,0 +1,6 @@
+---
+edpr_port: 3005
+edpr_client_id: ""
+edpr_client_secret: ""
+edpr_secret: "secret"
+edpr_database: "postgresql+psycopg2:///edpr"

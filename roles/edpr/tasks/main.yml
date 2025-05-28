@@ -1,0 +1,116 @@
+---
+- name: Create edpr database
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: edpr
+    encoding: UTF-8
+    owner: zverik
+  register: new_edpr_db
+
+- name: Allow local no password access to the database
+  become: yes
+  become_user: postgres
+  lineinfile:
+    path: /etc/postgresql/14/main/pg_hba.conf
+    insertafter: '# TYPE\s*DATABASE'
+    regexp: '^local edpr'
+    line: local edpr zverik trust
+  notify: restart postgresql
+
+- name: Create virtualenv for edpr
+  pip:
+    virtualenv: "/opt/src/edpr"
+    name: git+https://github.com/Zverik/everydoor-plugin-repo
+    state: latest
+  notify: restart edpr
+
+- name: Install psycopg2
+  pip:
+    virtualenv: "/opt/src/edpr"
+    name: psycopg2
+    state: present
+
+- name: Create var directory
+  file:
+    path: "{{ edpr_instance }}"
+    state: directory
+
+- name: Upload config
+  template:
+    src: config.j2
+    dest: "{{ edpr_instance }}/config.py"
+  notify: restart edpr
+
+- name: Initialise the db
+  when: new_edpr_db is changed
+  command:
+    argv:
+      - /opt/src/edpr/bin/flask
+      - db
+      - upgrade
+      - --directory
+      - /opt/src/edpr/lib/python3.10/site-packages/migrations
+
+- name: Create apache log directory
+  become: yes
+  file:
+    path: "/var/log/apache2/{{ domain }}"
+    state: directory
+    mode: 0775
+    owner: zverik
+    group: www-data
+
+- name: Create systemd service
+  become: yes
+  template:
+    src: edpr.service.j2
+    dest: /etc/systemd/system/edpr.service
+  register: new_edpr_service
+  notify: restart edpr
+
+- name: Enable and start edpr systemd module
+  when: new_edpr_service is changed
+  become: yes
+  systemd:
+    name: edpr
+    enabled: yes
+    daemon_reload: true
+    state: started
+
+- name: Ensure http_proxy is enabled
+  become: yes
+  apache2_module:
+    name: proxy_http
+    state: present
+
+- name: Create edpr document root
+  become: yes
+  file:
+    path: /var/www/edpr
+    state: directory
+    owner: zverik
+
+- name: Check that certificates exist
+  stat:
+    path: /etc/letsencrypt/certs/fullchain_plugins.every-door.app.crt
+  register: edpr_cert
+
+- name: Add apache domain
+  become: yes
+  template:
+    src: domain.j2
+    dest: /etc/apache2/sites-available/{{ domain }}.conf
+  notify: reload apache
+
+- name: Enable apache domain
+  become: yes
+  file:
+    src: /etc/apache2/sites-available/{{ domain }}.conf
+    dest: /etc/apache2/sites-enabled/{{ domain }}.conf
+    state: link
+  notify: reload apache
+
+- name: Set up backups
+  become: yes
+  import_tasks: backup.yml

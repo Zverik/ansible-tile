@@ -24,6 +24,10 @@ mapsme_auth_id: "{{ v_mapsme_auth_id }}"
 mapsme_auth_secret: "{{ v_mapsme_auth_secret }}"
 geoscribble_auth_id: "{{ v_geoscribble_auth_id }}"
 geoscribble_auth_secret: "{{ v_geoscribble_auth_secret }}"
+edpr_client_id: "{{ v_edpr_client_id }}"
+edpr_client_secret: "{{ v_edpr_client_secret }}"
+edpr_secret: "{{ v_edpr_secret }}"
+
 
 mayak_nav_admin_id: "{{v_mayak_nav_admin_id}}"
 mayak_nav_telegram_token: "{{ v_mayak_nav_telegram_token }}"

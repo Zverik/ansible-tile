@@ -13,6 +13,7 @@
       - archive.hitrye.ru
       - geoscribble.osmz.ru
       - matomo.tile.osmz.ru
+      - plugins.every-door.app
     http_roots:
       "tile.osmz.ru": /var/www/html
       "teleput.textual.ru": /var/www/teleput
@@ -20,6 +21,7 @@
       "archive.hitrye.ru": /var/www/hitrye_archive
       "geoscribble.osmz.ru": /var/www/geoscribble
       "matomo.tile.osmz.ru": /var/www/matomo/matomo
+      "plugins.every-door.app": /var/www/edpr
   tasks:
     - name: Test certificate ages
       stat:
